@@ -312,6 +312,15 @@ extension BluetoothPeripheralManager: BluetoothTransmitterDelegate {
         
     }
     
+    // to confirm to protocol BluetoothPeripheralDelegate
+    func heartBeat() {
+        // bluetooth peripheral's heart is beating
+        // if a heartBeat function is set, then call it
+        if let heartBeatFunction = heartBeatFunction {
+            heartBeatFunction()
+        }
+    }
+    
     /// will call bluetoothTransmitter.initiatePairing() - also sets timer, if no successful pairing within a few seconds, then info will be given to user asking to wait another few minutes
     private func initiateTransmitterPairing(bluetoothTransmitter: BluetoothTransmitter) {
         

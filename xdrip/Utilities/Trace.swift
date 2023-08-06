@@ -591,7 +591,15 @@ class Trace {
                             
                         }
                         
+                    case .Libre3HeartBeatType:
+                        if blePeripheral.libre2heartbeat != nil {
+                            
+                            traceInfo.appendStringAndNewLine("        Type: " + bluetoothPeripheralType.rawValue)
+                            
+                        }
+                        
                     }
+                    
                 }
                 
                 traceInfo.appendStringAndNewLine("")
