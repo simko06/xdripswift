@@ -67,6 +67,7 @@
 		F804870C2336D90200EBDDB7 /* M5Stack+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F804870A2336D90200EBDDB7 /* M5Stack+CoreDataClass.swift */; };
 		F804870D2336D90200EBDDB7 /* M5Stack+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F804870B2336D90200EBDDB7 /* M5Stack+CoreDataProperties.swift */; };
 		F80610C4222D4E4D00D8F236 /* ActionClosureable-extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80610C3222D4E4D00D8F236 /* ActionClosureable-extension.swift */; };
+		F80651482AC76F1300FBD366 /* LibreViewFollowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80651472AC76F1300FBD366 /* LibreViewFollowManager.swift */; };
 		F80859272364355F00F3829D /* ConstantsGlucoseChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80859262364355F00F3829D /* ConstantsGlucoseChart.swift */; };
 		F80859292364D61B00F3829D /* UserDefaults+charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80859282364D61B00F3829D /* UserDefaults+charts.swift */; };
 		F808592D23677D6A00F3829D /* ChartPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F808592C23677D6A00F3829D /* ChartPoint.swift */; };
@@ -804,6 +805,7 @@
 		F804870A2336D90200EBDDB7 /* M5Stack+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "M5Stack+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F804870B2336D90200EBDDB7 /* M5Stack+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "M5Stack+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F80610C3222D4E4D00D8F236 /* ActionClosureable-extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActionClosureable-extension.swift"; sourceTree = "<group>"; };
+		F80651472AC76F1300FBD366 /* LibreViewFollowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibreViewFollowManager.swift; sourceTree = "<group>"; };
 		F80859262364355F00F3829D /* ConstantsGlucoseChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantsGlucoseChart.swift; sourceTree = "<group>"; };
 		F80859282364D61B00F3829D /* UserDefaults+charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+charts.swift"; sourceTree = "<group>"; };
 		F808592C23677D6A00F3829D /* ChartPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartPoint.swift; sourceTree = "<group>"; };
@@ -1761,6 +1763,14 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		F80651462AC76EB600FBD366 /* LibreView */ = {
+			isa = PBXGroup;
+			children = (
+				F80651472AC76F1300FBD366 /* LibreViewFollowManager.swift */,
+			);
+			path = LibreView;
+			sourceTree = "<group>";
+		};
 		F808D2C3240323750084B5DB /* Libre */ = {
 			isa = PBXGroup;
 			children = (
@@ -2069,6 +2079,7 @@
 		F85DC2F621D25E3A00B9F74A /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				F80651462AC76EB600FBD366 /* LibreView */,
 				F821CF48229BF43A005C1E43 /* Alerts */,
 				F821CF54229BF43A005C1E43 /* Application */,
 				F8297F42238DC4AC00D74D66 /* BluetoothPeripheral */,
@@ -3607,6 +3618,7 @@
 				F8C97856242AA86B00A09483 /* CGMMiaoMiaoTransmitterDelegate.swift in Sources */,
 				F898EDF6234A8A5700BFB79B /* UInt32.swift in Sources */,
 				F8B955B1258BEE9D00C06016 /* ConstantsSpeakReading.swift in Sources */,
+				F80651482AC76F1300FBD366 /* LibreViewFollowManager.swift in Sources */,
 				F8F9723223A5915900C3F17D /* M5StackReadBlePassWordTxMessage.swift in Sources */,
 				F8A54AAF22D686CD00934E7A /* NightScoutBgReading.swift in Sources */,
 				F8DF765323E34F4500063910 /* DexcomG5+CoreDataClass.swift in Sources */,
