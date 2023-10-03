@@ -170,5 +170,12 @@ enum ConstantsLog {
     static let categoryBgReadingsView =                         "BgReadingsView           "
     
     static let categoryHeartBeatLibre2 =                        "HeartBeatLibre2          "
+    
+    /// for use in LibreViewFollowManager 
+    static let categoryLibreViewFollowManager =     "categoryLibreViewFollowManager      "
+    
+    /// for use in libre view settingsview model
+    static let categorySettingsViewLibreViewSettingsViewModel = "categorySettingsViewLibreViewSettingsViewModel"
+    
 }
 

@@ -141,6 +141,21 @@ extension UserDefaults {
         /// token to use for authentication, 0 means not set
         case nightscoutToken = "nightscoutToken"
         
+        // LibreView
+        
+        /// should readings be downloaded from LibreView
+        case libreViewEnabled = "libreViewEnabled"
+        ///  libreview url
+        case libreViewUrl = "libreViewUrl"
+        /// libreview username
+        case libreViewUsername = "libreViewUsername"
+        /// libreview password
+        case libreViewPassword = "libreViewPassword"
+        ///  are the libreview credentials tested or not - set to false whenever the password, url or username is changed. Set to true when user clicks "test connection" and test succeeds
+        case libreViewCredentialsTested = "libreViewCredentialsTested"
+        ///  token to use to get readings, expires after 6 months
+        case libreViewToken = "libreViewToken"
+        
         /// is a  nightscout sync of treatments required
         ///
         /// will be set to true in viewcontroller when a treatment is created, modified or deleted. The value will be observed by NightScoutUploadManager and when set to true, the manager knows a new sync is required
@@ -1195,6 +1210,70 @@ extension UserDefaults {
         }
         set {
             set(newValue, forKey: Key.nightScoutTreatmentsUpdateCounter.rawValue)
+        }
+    }
+
+    // MARK: LibreView Settings
+    
+    /// libreView enabled ? this impacts follower mode (download)
+    @objc dynamic var libreViewEnabled: Bool {
+        get {
+            return bool(forKey: Key.libreViewEnabled.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewEnabled.rawValue)
+        }
+    }
+    
+    /// the libreViewUrl url - starts with http
+    ///
+    /// when assigning a new value, it will be checked if it starts with http, if not then automatically https:// will be added
+    @objc dynamic var libreViewUrl:String? {
+        get {
+            return string(forKey: Key.libreViewUrl.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewUrl.rawValue)
+        }
+    }
+
+    /// the libreView Password
+    @objc dynamic var libreViewPassword:String? {
+        get {
+            return string(forKey: Key.libreViewPassword.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewPassword.rawValue)
+        }
+    }
+    
+    /// the libreView username
+    @objc dynamic var libreViewUsername:String? {
+        get {
+            return string(forKey: Key.libreViewUsername.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewUsername.rawValue)
+        }
+    }
+    
+    /// are the libreView credentials tested or not - set to false whenever the password, url or username is changed. Set to true when user clicks "test connection" and test succeeds
+    @objc dynamic var libreViewCredentialsTested:Bool {
+        get {
+            return bool(forKey: Key.libreViewCredentialsTested.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewCredentialsTested.rawValue)
+        }
+    }
+  
+    /// the libreView token
+    @objc dynamic var libreViewToken:String? {
+        get {
+            return string(forKey: Key.libreViewToken.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewToken.rawValue)
         }
     }
 

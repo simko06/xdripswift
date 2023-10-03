@@ -50,6 +50,9 @@ final class SettingsViewController: UIViewController {
         ///nightscout settings
         case nightscout
         
+        /// libreview settings
+        case libreView
+        
         ///dexcom share settings
         case dexcom
         
@@ -96,6 +99,8 @@ final class SettingsViewController: UIViewController {
                 return SettingsViewAlertSettingsViewModel()
             case .nightscout:
                 return SettingsViewNightScoutSettingsViewModel()
+            case .libreView:
+                return SettingsViewLibreViewSettingsViewModel()
             case .dexcom:
                 return SettingsViewDexcomSettingsViewModel()
             case .healthkit:
