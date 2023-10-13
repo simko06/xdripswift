@@ -16,10 +16,12 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter {
     // MARK: - properties
     
     /// service to be discovered
-    private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
-    
+    // private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
+    private let CBUUID_Service_Libre2: String = "FDE3"
+
     /// receive characteristic - this is the characteristic for the one minute reading
-    private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4" //"0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
+    //private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
+    private let CBUUID_ReceiveCharacteristic_Libre2: String = "F002"
     
     /// write characteristic - we will not write, but the parent class needs a write characteristic, use the same as the one used for Libre 2
     private let CBUUID_WriteCharacteristic_Libre2: String = "F001"

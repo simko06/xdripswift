@@ -423,6 +423,9 @@ final class RootViewController: UIViewController, ObservableObject {
     /// nightScoutFollowManager instance
     private var nightScoutFollowManager:NightScoutFollowManager?
     
+    /// libreViewFollowManager instance
+    private var libreViewFollowManager: LibreViewFollowManager?
+    
     /// dexcomShareUploadManager instance
     private var dexcomShareUploadManager:DexcomShareUploadManager?
     
@@ -825,7 +828,11 @@ final class RootViewController: UIViewController, ObservableObject {
         ApplicationManager.shared.addClosureToRunWhenAppDidEnterBackground(key: applicationManagerKeyTraceAppGoesToBackGround, closure: {trace("Application did enter background", log: self.log, category: ConstantsLog.categoryRootView, type: .info)})
         
         // add tracing when app comes to foreground
-        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyTraceAppGoesToForeground, closure: {trace("Application will enter foreground", log: self.log, category: ConstantsLog.categoryRootView, type: .info)})
+        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyTraceAppGoesToForeground, closure: {
+            trace("Application will enter foreground", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
+            self.libreViewFollowManager?.getReading()
+
+        })
         
         // add tracing when app will terminaten - this only works for non-suspended apps, probably (not tested) also works for apps that crash in the background
         ApplicationManager.shared.addClosureToRunWhenAppWillTerminate(key: applicationManagerKeyTraceAppWillTerminate, closure: {trace("Application will terminate", log: self.log, category: ConstantsLog.categoryRootView, type: .info)})
@@ -946,6 +953,9 @@ final class RootViewController: UIViewController, ObservableObject {
         // setup nightscoutmanager
         nightScoutFollowManager = NightScoutFollowManager(coreDataManager: coreDataManager, nightScoutFollowerDelegate: self)
         
+        // setup libreViewFollowManager
+        libreViewFollowManager = LibreViewFollowManager(coreDataManager: coreDataManager, libreLinkFollowerDelegate: self)
+        
         // setup healthkitmanager
         healthKitManager = HealthKitManager(coreDataManager: coreDataManager)
         
@@ -1026,7 +1036,7 @@ final class RootViewController: UIViewController, ObservableObject {
         }
         
         // setup bluetoothPeripheralManager
-        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, heartBeatFunction: {trace("heartbeat", log: self.log, category: ConstantsLog.categoryRootView, type: .info)}, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
+        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, heartBeatFunction: {self.libreViewFollowManager?.getReading()}, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
         
         // to initialize UserDefaults.standard.transmitterTypeAsString
         cgmTransmitterInfoChanged()
@@ -3394,7 +3404,22 @@ extension RootViewController:NightScoutFollowerDelegate {
             }
         }
     }
+    
 }
+
+// MARK: - conform to LibreLinkFollowerDelegate protocol
+
+extension RootViewController: LibreLinkFollowerDelegate {
+    
+    func libreLinkFollowerInfoReceived(followGlucoseDataArray: inout [GlucoseData], serialNumber: String?, sensorStart: Date?) {
+    
+        cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: nil)
+        
+    }
+    
+}
+
+// MARK: - conform to UIGestureRecognizerDelegate protocol
 
 extension RootViewController: UIGestureRecognizerDelegate {
     
@@ -3413,6 +3438,8 @@ extension RootViewController: UIGestureRecognizerDelegate {
     }
     
 }
+
+// MARK: - conform to WCSessionDelegate protocol
 
 // WCSession delegate functions
 extension RootViewController: WCSessionDelegate {

@@ -10,8 +10,26 @@ import Foundation
 
 class Libre2HeartBeatBluetoothPeripheralViewModel {
     
+    /// settings specific for Libre heartbeat
+    private enum Settings: Int, CaseIterable {
+        
+        /// in case LibreView as used to download readings
+        case useLibreViewAsCGM = 0
+        
+    }
+    
+    /// it's the bluetoothPeripheral as M5Stack
+   /* private var libre2HeartBeat: Libre2HeartBeat? {
+        get {
+            return bluetoothPeripheral as? Libre2HeartBeat
+        }
+    }*/
+
+    /// temporary reference to bluetoothPerpipheral, will be set in configure function.
+ //   private var bluetoothPeripheral: BluetoothPeripheral?
+
     /// reference to bluetoothPeripheralManager
-    private weak var bluetoothPeripheralManager: BluetoothPeripheralManaging?
+  //  private weak var bluetoothPeripheralManager: BluetoothPeripheralManaging?
 
 }
 
@@ -37,9 +55,34 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     
     func update(cell: UITableViewCell, forRow rawValue: Int, forSection section: Int, for bluetoothPeripheral: BluetoothPeripheral) {
         
-        // there's no section specific for this type of transmitter, this function will not be called, nothing to update
+        // verify that bluetoothPeripheral is a Libre2HeartBeat
+        guard let libre2HeartBeat = bluetoothPeripheral as? Libre2HeartBeat else {
+            fatalError("Libre2HeartBeatBluetoothPeripheralViewModel update, bluetoothPeripheral is not Libre2HeartBeat")
+        }
+        
+        // default value for accessoryView is nil
+        cell.accessoryView = nil
+        
+        guard let setting = Settings(rawValue: rawValue) else { fatalError("Libre2HeartBeatBluetoothPeripheralViewModel update, unexpected setting") }
+        
+        switch setting {
+            
+        case .useLibreViewAsCGM:
+            
+            cell.textLabel?.text = "use Libre View as CGM?"
+            
+            cell.detailTextLabel?.text = nil // it's a UISwitch,  no detailed text
+            
+            cell.accessoryView = UISwitch(isOn: libre2HeartBeat.useLibreViewAsCGM, action: { (isOn:Bool) in
+                
+                libre2HeartBeat.useLibreViewAsCGM = isOn
+                
+            })
+            
+        }
         
     }
+    
     
     func userDidSelectRow(withSettingRawValue rawValue: Int, forSection section: Int, for bluetoothPeripheral: BluetoothPeripheral, bluetoothPeripheralManager: BluetoothPeripheralManaging) -> SettingsSelectedRowAction {
         
@@ -50,15 +93,18 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     
     func numberOfSettings(inSection section: Int) -> Int {
         
-        // there are no specific settings for this type of bluetooth peripheral
-        // meaning this function should never be called
-        return 0
+        // should only be called with section number 1
+        if section == 1 {
+            return 1
+        } else {
+            return 0
+        }
         
     }
     
     func numberOfSections() -> Int {
         
-        // there's just the man section, this function will not be called
+        // one specific section
         return 1
         
     }

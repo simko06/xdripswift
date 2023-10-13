@@ -13,6 +13,6 @@ protocol LibreLinkFollowerDelegate: AnyObject {
     /// to pass back follower data
     /// - parameters:
     ///     - followGlucoseDataArray : array of FollowGlucoseData, can be empty array, first entry is the youngest
-    func libreLinkFollowerInfoReceived(followGlucoseDataArray:inout [NightScoutBgReading])
+    func libreLinkFollowerInfoReceived(followGlucoseDataArray:inout [GlucoseData], serialNumber: String?, sensorStart: Date?)
 
 }

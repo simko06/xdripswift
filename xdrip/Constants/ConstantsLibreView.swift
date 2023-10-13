@@ -8,5 +8,10 @@ enum ConstantsLibreView {
     
     /// path to login
     static let libreViewLoginPath = "/llu/auth/login"
-
+    
+    /// path to get connections, used to get patientId
+    static let libreViewConnectionPath = "/llu/connections"
+ 
+    /// factoryTimestamp  format in a reading downloaded from LibreView
+    static let libreViewFactoryTimeStampDateFormat = "m/d/yyyy h:mm:ss a"
 }

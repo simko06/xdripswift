@@ -43,10 +43,20 @@ class SettingsViewLibreViewSettingsViewModel {
 
         guard let username = UserDefaults.standard.libreViewUsername, let password = UserDefaults.standard.libreViewPassword, let siteUrl = UserDefaults.standard.libreViewUrl else {return}
 
-        LibreViewFollowManager.login(username: username, password: password, siteUrl: siteUrl, log: self.log, logCategory: ConstantsLog.categoryLibreViewFollowManager, completion: { (result:Bool, alerttitle:String, alerttext:String, token:String?) in
+        LibreViewFollowManager.loginToLibreView(username: username, password: password, siteUrl: siteUrl, log: self.log, logCategory: ConstantsLog.categoryLibreViewFollowManager, completion: { (errorText: String?, token: String?) in
             
-            self.callMessageHandlerInMainThread(title: alerttitle, message: alerttext)
+            if token != nil {
+                self.callMessageHandlerInMainThread(title: TextsNightScout.verificationSuccessfulAlertTitle, message: "LibreView credentials were verified successfully.")
+            } else {
+                var fullErrorText = "LibreView credentials check failed. "
+                if let errorText = errorText {
+                    fullErrorText = fullErrorText + "Error = " + errorText
+                }
+                self.callMessageHandlerInMainThread(title: TextsNightScout.verificationErrorAlertTitle, message: "fullErrorText")
+            }
             
+            // assign token to UserDefaults.standard.libreViewToken
+            // possible value is nil here, which means login failed so we set the token in UserDefaults to nil
             UserDefaults.standard.libreViewToken = token
             
         })
@@ -97,8 +107,8 @@ extension SettingsViewLibreViewSettingsViewModel: SettingsViewModelProtocol {
         case .libreViewUrl:
             return SettingsSelectedRowAction.askText(title: Texts_SettingsView.labelNightScoutUrl, message: "Enter your Libreview URL", keyboardType: .URL, text: UserDefaults.standard.libreViewUrl != nil ? UserDefaults.standard.libreViewUrl : ConstantsLibreView.defaultLibreViewUrl, placeHolder: nil, actionTitle: nil, cancelTitle: nil, actionHandler: {(nightscouturl:String) in
                 
-                // url changed, set libreViewCredentialsTested to false, new test is needed
-                UserDefaults.standard.libreViewCredentialsTested = false
+                // url changed, set token  to nil, new test is needed
+                UserDefaults.standard.libreViewToken = nil
                 
                 // if user gave empty string then set to nil
                 // if not nil, and if not starting with http or https, add https, and remove ending /
@@ -144,8 +154,8 @@ extension SettingsViewLibreViewSettingsViewModel: SettingsViewModelProtocol {
         case .libreViewPassword:
             return SettingsSelectedRowAction.askText(title: "Password", message:  "Give Password", keyboardType: .default, text: UserDefaults.standard.libreViewPassword, placeHolder: nil, actionTitle: nil, cancelTitle: nil, actionHandler: {(password:String) in
                 
-                // password changed, set libreViewCredentialsTested to false, new test is needed
-                UserDefaults.standard.libreViewCredentialsTested = false
+                // password changed, set token  to nil, new test is needed
+                UserDefaults.standard.libreViewToken = nil
 
                 UserDefaults.standard.libreViewPassword = password.toNilIfLength0()
                 
@@ -153,11 +163,6 @@ extension SettingsViewLibreViewSettingsViewModel: SettingsViewModelProtocol {
 
         case .testUrlAndAPIKey:
 
-                // show info that test is started, through the messageHandler
-                if let messageHandler = messageHandler {
-                    messageHandler(TextsNightScout.nightScoutAPIKeyAndURLStartedTitle, TextsNightScout.nightScoutAPIKeyAndURLStartedBody)
-                }
-                
                 self.testLibreViewCredentials()
                 
                 return .nothing
@@ -165,8 +170,8 @@ extension SettingsViewLibreViewSettingsViewModel: SettingsViewModelProtocol {
         case .libreViewUsername:
             return SettingsSelectedRowAction.askText(title: "Username", message:  "Give Username", keyboardType: .default, text: UserDefaults.standard.libreViewUsername, placeHolder: nil, actionTitle: nil, cancelTitle: nil, actionHandler: {(username:String) in
             
-                // username changed, set libreViewCredentialsTested to false, new test is needed
-                UserDefaults.standard.libreViewCredentialsTested = false
+                // password changed, set token  to nil, new test is needed
+                UserDefaults.standard.libreViewToken = nil
 
                 UserDefaults.standard.libreViewUsername = username.toNilIfLength0()
                 
@@ -242,7 +247,7 @@ extension SettingsViewLibreViewSettingsViewModel: SettingsViewModelProtocol {
         case .libreViewPassword:
             return UserDefaults.standard.libreViewPassword != nil ? obscureString(stringToObscure: UserDefaults.standard.libreViewPassword) : nil
         case .testUrlAndAPIKey:
-            return UserDefaults.standard.libreViewCredentialsTested ? "Test Ok":"Not tested"
+            return UserDefaults.standard.libreViewToken != nil ? "Test Ok":"Not tested"
         case .libreViewUsername:
             return UserDefaults.standard.libreViewUsername
         }

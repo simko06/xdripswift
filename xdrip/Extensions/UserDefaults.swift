@@ -151,10 +151,12 @@ extension UserDefaults {
         case libreViewUsername = "libreViewUsername"
         /// libreview password
         case libreViewPassword = "libreViewPassword"
-        ///  are the libreview credentials tested or not - set to false whenever the password, url or username is changed. Set to true when user clicks "test connection" and test succeeds
-        case libreViewCredentialsTested = "libreViewCredentialsTested"
         ///  token to use to get readings, expires after 6 months
+        ///  if nil then credentials are not yet tested or last test failed
         case libreViewToken = "libreViewToken"
+        /// the libreView patient id to use to get readings
+        /// if nil then no patientId is known
+        case libreViewPatientId = "libreViewPatientId"
         
         /// is a  nightscout sync of treatments required
         ///
@@ -1257,17 +1259,8 @@ extension UserDefaults {
         }
     }
     
-    /// are the libreView credentials tested or not - set to false whenever the password, url or username is changed. Set to true when user clicks "test connection" and test succeeds
-    @objc dynamic var libreViewCredentialsTested:Bool {
-        get {
-            return bool(forKey: Key.libreViewCredentialsTested.rawValue)
-        }
-        set {
-            set(newValue, forKey: Key.libreViewCredentialsTested.rawValue)
-        }
-    }
-  
     /// the libreView token
+    ///  if nil then credentials are not yet tested or last test failed
     @objc dynamic var libreViewToken:String? {
         get {
             return string(forKey: Key.libreViewToken.rawValue)
@@ -1277,6 +1270,17 @@ extension UserDefaults {
         }
     }
 
+    /// the libreView patient id to use to get readings
+    ///  if nil then no patientId is known
+    @objc dynamic var libreViewPatientId:String? {
+        get {
+            return string(forKey: Key.libreViewPatientId.rawValue)
+        }
+        set {
+            set(newValue, forKey: Key.libreViewPatientId.rawValue)
+        }
+    }
+    
     // MARK: Dexcom Share Settings
     
     /// should readings be uploaded to Dexcom share server, true or false

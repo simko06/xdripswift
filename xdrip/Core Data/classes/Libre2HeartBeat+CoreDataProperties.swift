@@ -18,4 +18,7 @@ extension Libre2HeartBeat {
 
     @NSManaged public var blePeripheral: BLEPeripheral
 
+    /// if true then LibreView is used to retrieve readings and considered as CGM. Because there's now bluetooth peripheral configured as CGM, we use these setting, which will then allow to set a cgm transmitter in the bluetooth peripheral manager
+    @NSManaged public var useLibreViewAsCGM: Bool
+
 }
