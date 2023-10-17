@@ -48,6 +48,8 @@ class BluetoothPeripheralManager: NSObject {
             
             if newValue != currentCgmTransmitterAddress {
                 
+                trace("    in didset currentCgmTransmitterAddress", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                
                 cgmTransmitterInfoChanged()
 
                 // share new address with loop, but not if suppressLoopShare is on
@@ -56,7 +58,6 @@ class BluetoothPeripheralManager: NSObject {
                     setCGMTransmitterInSharedUserDefaults()
 
                 }
-                
                 
             }
             
@@ -1023,6 +1024,11 @@ class BluetoothPeripheralManager: NSObject {
                                 // add it to the array of bluetoothTransmitters
                                 bluetoothTransmitters.insert(Libre2HeartBeatBluetoothTransmitter(address: libre2heartbeat.blePeripheral.address, name: libre2heartbeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self), at: index)
 
+                            }
+                            
+                            // workaround to allow creation of a cgm, even though we use libreview to download readings, in which case we'll need a libre2heartbeat
+                            if libre2heartbeat.useLibreViewAsCGM {
+                                currentCgmTransmitterAddress = blePeripheral.address
                             }
                             
                         } else {

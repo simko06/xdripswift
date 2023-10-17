@@ -134,14 +134,70 @@ extension BluetoothPeripheralManager: BluetoothTransmitterDelegate {
         /// helper function : if bluetoothTransmitter is a CGMTransmitter and if it's a new one (ie address is different than currentCgmTransmitterAddress then call cgmTransmitterChanged
         let checkCurrentCGMTransmitterHelper = {
             
-            // if it's a CGMTransmitter and if it's a new one then call cgmTransmitterChanged,
-            if bluetoothTransmitter is CGMTransmitter, bluetoothTransmitter.deviceAddress != self.currentCgmTransmitterAddress {
-                
-                trace("    calling cgmTransmitterChanged", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
-                
-                // this will implicitly call cgmTransmitterChanged
-                self.currentCgmTransmitterAddress = bluetoothTransmitter.deviceAddress
-                
+            // if it's a CGMTransmitter and if it's a new one then call cgmTransmitterChanged
+            
+            if bluetoothTransmitter is CGMTransmitter {
+
+                if bluetoothTransmitter.deviceAddress != self.currentCgmTransmitterAddress {
+                    
+                    if let bluetoothPeripheral = self.getBluetoothPeripheral(for: bluetoothTransmitter) {
+
+                        if let heartbeatBluetoothPeripheral = bluetoothPeripheral as? Libre2HeartBeat {
+                            
+                            if heartbeatBluetoothPeripheral.useLibreViewAsCGM {
+                                
+                                trace("    calling cgmTransmitterChanged", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                                
+                                // this will implicitly call cgmTransmitterChanged
+                                self.currentCgmTransmitterAddress = bluetoothTransmitter.deviceAddress
+                                
+                            }
+                            
+                        } else {
+                            // it's not a heartbeat, so it's a normal CGM
+                            trace("    calling cgmTransmitterChanged", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                            
+                            // this will implicitly call cgmTransmitterChanged
+                            self.currentCgmTransmitterAddress = bluetoothTransmitter.deviceAddress
+                        }
+
+                    } else {
+
+                        trace("    calling cgmTransmitterChanged", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                        
+                        // this will implicitly call cgmTransmitterChanged
+                        self.currentCgmTransmitterAddress = bluetoothTransmitter.deviceAddress
+
+                    }
+                    
+                } else {
+                 
+                    if let bluetoothPeripheral = self.getBluetoothPeripheral(for: bluetoothTransmitter) {
+
+                        if let heartbeatBluetoothPeripheral = bluetoothPeripheral as? Libre2HeartBeat {
+                            
+                            if heartbeatBluetoothPeripheral.useLibreViewAsCGM {
+                                
+                                trace("    calling cgmTransmitterChanged", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                                
+                                // this will implicitly call cgmTransmitterChanged
+                                self.currentCgmTransmitterAddress = bluetoothTransmitter.deviceAddress
+                                
+                            } else {
+                                
+                                trace("    calling cgmTransmitterChanged, setting currentCgmTransmitterAddress to nil", log: self.log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .info)
+                                
+                                // this will implicitly call cgmTransmitterChanged
+                                self.currentCgmTransmitterAddress = nil
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
+
             }
             
         }

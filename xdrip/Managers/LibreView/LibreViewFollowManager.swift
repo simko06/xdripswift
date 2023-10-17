@@ -30,7 +30,12 @@ class LibreViewFollowManager: NSObject {
     private (set) weak var libreLinkFollowerDelegate:LibreLinkFollowerDelegate?
     
     /// dateformatter for factoryTimetamp in readings downloaded form LibreView
-    private static let libreViewDateFormatter = DateFormatter.getDateFormatter(dateFormat: ConstantsLibreView.libreViewFactoryTimeStampDateFormat)
+    private static let libreViewDateFormatter = {
+        var dateFormatter = DateFormatter.getDateFormatter(dateFormat: ConstantsLibreView.libreViewFactoryTimeStampDateFormat)
+        dateFormatter.timeZone = TimeZone(identifier: ConstantsLibreView.libreViewFactoryTimeStampTimeZone)
+        return dateFormatter
+    }()
+    
     
     // MARK: - initializer
         
@@ -109,8 +114,6 @@ class LibreViewFollowManager: NSObject {
                     completion(error.localizedDescription, nil)
                     
                 } else if let data = data {
-                    
-                    //trace("data = %{public}@", log: log, category: logCategory, type: .info, String(data: data, encoding: String.Encoding.utf8)!)
                     
                     do {
                         
@@ -198,7 +201,15 @@ class LibreViewFollowManager: NSObject {
             
             LibreViewFollowManager.getReadingsFromLibreView(token: token, patientId: patientId, siteUrl: siteUrl, log: self.log, logCategory: ConstantsLog.categoryLibreViewFollowManager, completion: { followGlucoseDataArray, serialNumber, sensorStart in
                 
+                // need to take a copy because can not pass an immutable value as inout parameter
+                var copyFollowGlucoseDataArray = Array(followGlucoseDataArray)
                 
+                // call libreLinkFollowerInfoReceived in main thread
+                DispatchQueue.main.sync {
+
+                    self.libreLinkFollowerDelegate?.libreLinkFollowerInfoReceived(followGlucoseDataArray: &copyFollowGlucoseDataArray, serialNumber: serialNumber, sensorStart: sensorStart)
+
+                }
                 
         })}
         
@@ -317,7 +328,7 @@ class LibreViewFollowManager: NSObject {
                 } else if let data = data {
                     
                     if let dataAsString = String(bytes: data, encoding: .utf8) {
-                        trace("    data = %{public}@", log: log, category: ConstantsLog.categoryLibreViewFollowManager, type: .info, dataAsString)
+                        trace("    data = %{public}@", log: log, category: ConstantsLog.categoryLibreViewFollowManager, type: .debug, dataAsString)
                     }
 
                     do {
@@ -330,16 +341,7 @@ class LibreViewFollowManager: NSObject {
                                     
                                     if let glucoseMeasurementAsDictionary = connectionAsDictionary["glucoseMeasurement"] as? [String: Any] {
 
-                                        // see if there's an object with key 'ValueInMgPerDl'
-                                        if let valueInMgPerDl = glucoseMeasurementAsDictionary["ValueInMgPerDl"] as? Int {
-                                            
-                                            getReadings(fromJsonDictionary: glucoseMeasurementAsDictionary, writeTo: &followGlucoseDataArray, log: log, logCategory: ConstantsLog.categoryLibreViewFollowManager, specificLogText: "glucoseMeasurement")
-                                            
-                                        } else {
-                                            
-                                            trace("failed to find object with key 'valueInMgPerDl in glucoseMeasurement'", log: log, category: logCategory, type: .error)
-                                            
-                                        }
+                                        getReadings(fromJsonDictionary: glucoseMeasurementAsDictionary, writeTo: &followGlucoseDataArray, log: log, logCategory: ConstantsLog.categoryLibreViewFollowManager, specificLogText: "glucoseMeasurement")
 
                                     }
                                     
@@ -358,11 +360,7 @@ class LibreViewFollowManager: NSObject {
                                         
                                         if let glucoseMeasurementAsDictionary = glucoseMeasurementAsDictionary as? [String:Any] {
                                             
-                                            if let valueInMgPerDl = glucoseMeasurementAsDictionary["ValueInMgPerDl"] as? Int {
-                                                
                                                 getReadings(fromJsonDictionary: glucoseMeasurementAsDictionary, writeTo: &followGlucoseDataArray, log: log, logCategory: ConstantsLog.categoryLibreViewFollowManager, specificLogText: "graphData")
-                                                
-                                            }
                                             
                                         }
 
@@ -381,7 +379,7 @@ class LibreViewFollowManager: NSObject {
                                                     serialNumber = newSerialNumber
                                                 }
                                                 if let sensorStartAsInt = sensorAsDictionary["a"] as? Int {
-                                                    let sensorStartAsDate = Date(timeIntervalSince1970: TimeInterval(sensorStartAsInt))
+                                                    sensorStart = Date(timeIntervalSince1970: TimeInterval(sensorStartAsInt))
                                                 }
                                             }
 
@@ -557,11 +555,7 @@ class LibreViewFollowManager: NSObject {
         
         if let valueInMgPerDl = fromJsonDictionary["ValueInMgPerDl"] as? Int {
             
-            trace("found valueInMgPerDl = %{public}@ in %{public}@", log: log, category: logCategory, type: .info, valueInMgPerDl.description, specificLogText)
-
             if let factoryTimestamp = fromJsonDictionary["FactoryTimestamp"] as? String {
-                
-                trace("found factoryTimestamp = %{public}@", log: log, category: logCategory, type: .info, factoryTimestamp)
                 
                 // create reading and insert in followGlucoseDataArray
                 if let newReading = GlucoseData(timeStamp: factoryTimestamp, sgv: valueInMgPerDl, dateFormatter: libreViewDateFormatter) {
@@ -576,4 +570,30 @@ class LibreViewFollowManager: NSObject {
         
     }
     
+    // MARK: - overriden function
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if let keyPath = keyPath {
+            
+            if let keyPathEnum = UserDefaults.Key(rawValue: keyPath) {
+                
+                switch keyPathEnum {
+                    
+                case UserDefaults.Key.isMaster, UserDefaults.Key.libreViewUrl, UserDefaults.Key.libreViewEnabled, UserDefaults.Key.libreViewPassword, UserDefaults.Key.libreViewUsername :
+                    
+                    // change by user, should not be done within 200 ms
+                    if (keyValueObserverTimeKeeper.verifyKey(forKey: keyPathEnum.rawValue, withMinimumDelayMilliSeconds: 200)) {
+                        
+                        // TODO
+                        
+                    }
+                    
+                default:
+                    break
+                }
+            }
+        }
+    }
+
 }

@@ -11,7 +11,10 @@ import os
 import CoreBluetooth
 import AVFoundation
 
-class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter {
+/**
+ Libre2HeartBeatBluetoothTransmitter is not a real CGMTransmitter but used as workaround to make clear in bluetoothperipheral manager that libreview is used as CGM
+ */
+class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter {
     
     // MARK: - properties
     
@@ -49,7 +52,7 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter {
         
     }
     
-    // MARK: - MARK: CBCentralManager overriden functions
+    // MARK: CBCentralManager overriden functions
     
     override func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
@@ -60,4 +63,42 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter {
 
     }
         
+    // MARK: - conform to CGMTransmitter
+    
+    func cgmTransmitterType() -> CGMTransmitterType {
+        
+        // although uses for Libre2, should be ok to use Libre 2
+        return .Libre2
+        
+    }
+    
+    func getCBUUID_Service() -> String {
+        
+        return CBUUID_Service_Libre2
+        
+    }
+    
+    func getCBUUID_Receive() -> String {
+        
+        return CBUUID_ReceiveCharacteristic_Libre2
+        
+    }
+
+    func isWebOOPEnabled() -> Bool {
+        // no calibration for values received from LibreView
+        return true
+    }
+    
+    func isNonFixedSlopeEnabled() -> Bool {
+        return false
+    }
+    
+    func maxSensorAgeInDays() -> Int? {
+        
+        return LibreSensorType.libre2.maxSensorAgeInDays()
+        
+    }
+    
+
+
 }

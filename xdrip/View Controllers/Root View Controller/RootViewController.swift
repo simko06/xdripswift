@@ -981,6 +981,8 @@ final class RootViewController: UIViewController, ObservableObject {
             // if cgmTransmitter not nil then reassign calibrator and set UserDefaults.standard.transmitterTypeAsString
             if let cgmTransmitter = self.bluetoothPeripheralManager?.getCGMTransmitter() {
                 
+                trace("in cgmTransmitterInfoChanged in rootviewcontroller, found cgmtransmitter", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
+                
                 // reassign calibrator, even if the type of calibrator would not change
                 self.calibrator = self.getCalibrator(cgmTransmitter: cgmTransmitter)
                 
@@ -1213,6 +1215,8 @@ final class RootViewController: UIViewController, ObservableObject {
             if let lastReading = bgReadingsAccessor.last(forSensor: nil) {
                 timeStampLastBgReading = lastReading.timeStamp
             }
+            trace("timeStampLastBgReading =  %{public}@", log: self.log, category: ConstantsLog.categoryRootView, type: .info, timeStampLastBgReading.description(with: .current))
+            
             
             /// in case loopdelay > 0, this will be used to share with Loop
             /// - it will contain the full range off per minute readings (in stead of filtered by 5 minutes
@@ -3141,7 +3145,7 @@ extension RootViewController: CGMTransmitterDelegate {
     func cgmTransmitterInfoReceived(glucoseData: inout [GlucoseData], transmitterBatteryInfo: TransmitterBatteryInfo?, sensorAge: TimeInterval?) {
         
         trace("transmitterBatteryInfo %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .debug, transmitterBatteryInfo?.description ?? "not received")
-        trace("sensor time in days %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .debug, sensorAge?.days.round(toDecimalPlaces: 1).description ?? "not received")
+        trace("sensor time in days %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .info, sensorAge?.days.round(toDecimalPlaces: 1).description ?? "not received")
         trace("glucoseData size = %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .info, glucoseData.count.description)
         
         // if received transmitterBatteryInfo not nil, then store it
@@ -3152,7 +3156,7 @@ extension RootViewController: CGMTransmitterDelegate {
         // list readings
         for (index, glucose) in glucoseData.enumerated() {
             
-            trace("glucoseData %{public}@, value = %{public}@, timestamp = %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .info, index.description, glucose.glucoseLevelRaw.description, glucose.timeStamp.toString(timeStyle: .long, dateStyle: .none))
+            trace("glucoseData %{public}@, value = %{public}@, timestamp = %{public}@", log: log, category: ConstantsLog.categoryRootView, type: .debug, index.description, glucose.glucoseLevelRaw.description, glucose.timeStamp.toString(timeStyle: .long, dateStyle: .long))
             
         }
         
@@ -3412,8 +3416,14 @@ extension RootViewController:NightScoutFollowerDelegate {
 extension RootViewController: LibreLinkFollowerDelegate {
     
     func libreLinkFollowerInfoReceived(followGlucoseDataArray: inout [GlucoseData], serialNumber: String?, sensorStart: Date?) {
-    
-        cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: nil)
+
+        // if sensorStart not nil, then calculate sensorAge as TimeInterval
+        var sensorAge: TimeInterval? = nil
+        if let sensorStart = sensorStart {
+            sensorAge = Date().timeIntervalSince(sensorStart)
+            trace("sensor age = : %{public}@", log: self.log, category: ConstantsLog.categoryRootView, type: .info, Double(sensorAge!).description)
+        }
+        cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: sensorAge)
         
     }
     

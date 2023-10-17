@@ -18,18 +18,11 @@ class Libre2HeartBeatBluetoothPeripheralViewModel {
         
     }
     
-    /// it's the bluetoothPeripheral as M5Stack
-   /* private var libre2HeartBeat: Libre2HeartBeat? {
-        get {
-            return bluetoothPeripheral as? Libre2HeartBeat
-        }
-    }*/
-
-    /// temporary reference to bluetoothPerpipheral, will be set in configure function.
- //   private var bluetoothPeripheral: BluetoothPeripheral?
-
     /// reference to bluetoothPeripheralManager
-  //  private weak var bluetoothPeripheralManager: BluetoothPeripheralManaging?
+    private weak var bluetoothPeripheralManager: BluetoothPeripheralManaging?
+    
+    /// temporary reference to bluetoothPerpipheral, will be set in configure function.
+    private var bluetoothPeripheral: BluetoothPeripheral?
 
 }
 
@@ -39,7 +32,9 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     
     func configure(bluetoothPeripheral: BluetoothPeripheral?, bluetoothPeripheralManager: BluetoothPeripheralManaging, tableView: UITableView, bluetoothPeripheralViewController: BluetoothPeripheralViewController) {
         
-      // there's nothing to configure
+        self.bluetoothPeripheralManager = bluetoothPeripheralManager
+        
+        self.bluetoothPeripheral = bluetoothPeripheral
         
     }
     
@@ -73,11 +68,40 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
             
             cell.detailTextLabel?.text = nil // it's a UISwitch,  no detailed text
             
-            cell.accessoryView = UISwitch(isOn: libre2HeartBeat.useLibreViewAsCGM, action: { (isOn:Bool) in
+            let uISwitch = UISwitch(isOn: libre2HeartBeat.useLibreViewAsCGM, action: { (isOn:Bool) in
                 
                 libre2HeartBeat.useLibreViewAsCGM = isOn
+
+                if let libre2HeartBeatTransmitter = self.bluetoothPeripheralManager?.getBluetoothTransmitter(for: libre2HeartBeat, createANewOneIfNecesssary: false) {
+                    
+                    // disconnect and connect, this will force a call to diconnectto in bluetoothperipheralmanager
+                    // needed to set the address of cgmtransmitteraddress
+                    libre2HeartBeatTransmitter.disconnect()
+                    libre2HeartBeatTransmitter.connect()
+                    
+                }
                 
             })
+            
+            // if this this heartbeat transmitter is the actual cgm transmitter, or if there's no cgm transmitter configured yet, then it's allowed to set this heartbeat transmitter as cgm transmitter, ie uiswitch should be enabled
+            if let cgmTransmitter = bluetoothPeripheralManager?.getCGMTransmitter() {
+                if let heartbeat = cgmTransmitter as? Libre2HeartBeatBluetoothTransmitter {
+                    if heartbeat.deviceAddress == bluetoothPeripheral.blePeripheral.address {
+                        uISwitch.isEnabled = true
+                    } else {
+                        uISwitch.isEnabled = false
+                    }
+                } else {
+                    // there's a cgm transmitter but it's not a heartbeat, so it's certainly not this transmitter
+                    // not allowed to enable this heartbeat transmitter as cgm transmitter
+                    uISwitch.isEnabled = false
+                }
+            } else {
+                // there's no cgm transmitter yet, it's allowed to enable this HeartBeat transmitter as cgm transmitter
+                uISwitch.isEnabled = true
+            }
+            
+            cell.accessoryView = uISwitch
             
         }
         
