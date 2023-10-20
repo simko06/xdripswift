@@ -396,7 +396,7 @@ class BluetoothPeripheralManager: NSObject {
                         
                         if let transmitterId = libre2heartbeat.blePeripheral.transmitterId {
                             
-                            newTransmitter = Libre2HeartBeatBluetoothTransmitter(address: libre2heartbeat.blePeripheral.address, name: libre2heartbeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self)
+                            newTransmitter = Libre2HeartBeatBluetoothTransmitter(address: libre2heartbeat.blePeripheral.address, name: libre2heartbeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self, webOOPEnabled: libre2heartbeat.blePeripheral.webOOPEnabled)
                             
                         } else {
                             
@@ -607,7 +607,7 @@ class BluetoothPeripheralManager: NSObject {
                 fatalError("in createNewTransmitter, type Libre2HeartBeatType, transmitterId is nil")
             }
             
-            return Libre2HeartBeatBluetoothTransmitter(address: nil, name: nil, transmitterID: transmitterId, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self)
+            return Libre2HeartBeatBluetoothTransmitter(address: nil, name: nil, transmitterID: transmitterId, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, webOOPEnabled: nil)
 
         }
         
@@ -731,7 +731,7 @@ class BluetoothPeripheralManager: NSObject {
     /// helper function for extension BluetoothPeripheralManaging
     private func getCGMTransmitter(for bluetoothPeripheral: BluetoothPeripheral) -> CGMTransmitter? {
         
-        if bluetoothPeripheral.bluetoothPeripheralType().category() == .CGM {
+        if bluetoothPeripheral.bluetoothPeripheralType().category() == .CGM || bluetoothPeripheral.bluetoothPeripheralType().category() == .HeartBeat {
             
             if let cgmTransmitter = getBluetoothTransmitter(for: bluetoothPeripheral, createANewOneIfNecesssary: false) as? CGMTransmitter {
                 
@@ -1022,7 +1022,7 @@ class BluetoothPeripheralManager: NSObject {
 
                                 // create an instance of Libre2HeartBeatBluetoothTransmitter, Libre2HeartBeatBluetoothTransmitter will automatically try to connect to the transmitter with the address that is stored in libre2heartbeat
                                 // add it to the array of bluetoothTransmitters
-                                bluetoothTransmitters.insert(Libre2HeartBeatBluetoothTransmitter(address: libre2heartbeat.blePeripheral.address, name: libre2heartbeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self), at: index)
+                                bluetoothTransmitters.insert(Libre2HeartBeatBluetoothTransmitter(address: libre2heartbeat.blePeripheral.address, name: libre2heartbeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self, webOOPEnabled: libre2heartbeat.blePeripheral.webOOPEnabled), at: index)
 
                             }
                             

@@ -32,13 +32,17 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     /// for trace
     private let log = OSLog(subsystem: ConstantsLog.subSystem, category: ConstantsLog.categoryHeartBeatLibre2)
     
+    /// is the transmitter oop web enabled or not, to be able to calibrate values received from Libre View
+    private var webOOPEnabled: Bool
+
     // MARK: - Initialization
     /// - parameters:
     ///     - address: if already connected before, then give here the address that was received during previous connect, if not give nil
     ///     - name : if already connected before, then give here the name that was received during previous connect, if not give nil
     ///     - transmitterID: should be the name of the libre 2 transmitter as seen in the iOS settings, doesn't need to be the full name, 3-5 characters should be ok
     ///     - bluetoothTransmitterDelegate : a bluetoothTransmitterDelegate
-    init(address:String?, name: String?, transmitterID:String, bluetoothTransmitterDelegate: BluetoothTransmitterDelegate) {
+    ///     - webOOPEnabled : enabled or not, if nil then default false
+    init(address:String?, name: String?, transmitterID:String, bluetoothTransmitterDelegate: BluetoothTransmitterDelegate, webOOPEnabled: Bool?) {
 
         // if it's a new device being scanned for, then use name ABBOTT. It will connect to anything that starts with name ABBOTT
         var newAddressAndName:BluetoothTransmitter.DeviceAddressAndName = BluetoothTransmitter.DeviceAddressAndName.notYetConnected(expectedName: transmitterID)
@@ -48,6 +52,9 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
             newAddressAndName = BluetoothTransmitter.DeviceAddressAndName.alreadyConnectedBefore(address: address, name: nil)
         }
         
+        // initialize webOOPEnabled
+        self.webOOPEnabled = webOOPEnabled ?? false
+
         super.init(addressAndName: newAddressAndName, CBUUID_Advertisement: nil, servicesCBUUIDs: [CBUUID(string: CBUUID_Service_Libre2)], CBUUID_ReceiveCharacteristic: CBUUID_ReceiveCharacteristic_Libre2, CBUUID_WriteCharacteristic: CBUUID_WriteCharacteristic_Libre2, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate)
         
     }
@@ -85,10 +92,10 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     }
 
     func isWebOOPEnabled() -> Bool {
-        // no calibration for values received from LibreView
-        return true
+        return webOOPEnabled
     }
     
+
     func isNonFixedSlopeEnabled() -> Bool {
         return false
     }
@@ -99,6 +106,11 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
         
     }
     
-
-
+    /// set webOOPEnabled value
+    func setWebOOPEnabled(enabled: Bool) {
+        
+        webOOPEnabled = enabled
+        
+    }
+    
 }

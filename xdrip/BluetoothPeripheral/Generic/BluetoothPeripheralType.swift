@@ -264,10 +264,14 @@ enum BluetoothPeripheralType: String, CaseIterable {
         
         switch self {
             
-        case .M5StackType, .M5StickCType, .WatlaaType, .DexcomG4Type, .BluconType, .BlueReaderType, .DropletType , .GNSentryType, .Libre3HeartBeatType:
+        case .M5StackType, .M5StickCType, .WatlaaType, .DexcomG4Type, .BluconType, .BlueReaderType, .DropletType , .GNSentryType:
             return false
             
         case .BubbleType, .MiaoMiaoType, .AtomType, .DexcomType:
+            return true
+            
+        case .Libre3HeartBeatType:
+            // to be able to recalibrate values received from libreview
             return true
             
         case .Libre2Type:

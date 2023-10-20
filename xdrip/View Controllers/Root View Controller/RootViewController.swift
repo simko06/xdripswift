@@ -698,7 +698,7 @@ final class RootViewController: UIViewController, ObservableObject {
         
         
         // enable or disable the buttons 'sensor' and 'calibrate' on top, depending on master or follower
-        changeButtonsStatusTo(enabled: UserDefaults.standard.isMaster)
+        changeButtonsStatus()
         
         // Setup Core Data Manager - setting up coreDataManager happens asynchronously
         // completion handler is called when finished. This gives the app time to already continue setup which is independent of coredata, like initializing the views
@@ -1034,6 +1034,8 @@ final class RootViewController: UIViewController, ObservableObject {
                 // CGMMiaoMiaoTransmitter.testRange(cGMTransmitterDelegate: self)
                 
             }
+            
+            self.changeButtonsStatus()
             
         }
         
@@ -1411,7 +1413,7 @@ final class RootViewController: UIViewController, ObservableObject {
         
         case UserDefaults.Key.isMaster :
             
-            changeButtonsStatusTo(enabled: UserDefaults.standard.isMaster)
+            changeButtonsStatus()
             
             guard let cgmTransmitter = self.bluetoothPeripheralManager?.getCGMTransmitter() else {break}
             
@@ -1858,7 +1860,13 @@ final class RootViewController: UIViewController, ObservableObject {
                 
                 // no oop web, fixed slope
                 
-                calibrator = Libre1Calibrator()
+                // If it's a Libre2HeartBeatBluetoothTransmitter, then use LibreViewCalibrator
+                if cgmTransmitter is Libre2HeartBeatBluetoothTransmitter {
+                    calibrator = LibreViewCalibrator()
+                } else {
+                    calibrator = Libre1Calibrator()
+
+                }
                 
             }
             
@@ -2391,9 +2399,14 @@ final class RootViewController: UIViewController, ObservableObject {
         
     }
     
-    /// enables or disables the buttons on top of the screen
-    private func changeButtonsStatusTo(enabled: Bool) {
-        
+    /// enables or disables the buttons on top of the screen,  depending if master or follower, or heartbeat with libreview
+    private func changeButtonsStatus() {
+       
+        // enable or disable the buttons 'sensor' and 'calibrate' on top, depending on master or follower
+        // if a cgm tranmitter exists and it's not weboopenabled (ie doesn't use transmitter algorithm), then enabled will be true
+        // this is to support heartbeat transmitter that is also cgm transmitter
+        let enabled = ({if let cgmTransmitter = self.bluetoothPeripheralManager?.getCGMTransmitter(), !cgmTransmitter.isWebOOPEnabled() {return true } else {return false}}())
+
         if enabled {
             sensorToolbarButtonOutlet.enable()
             calibrateToolbarButtonOutlet.enable()

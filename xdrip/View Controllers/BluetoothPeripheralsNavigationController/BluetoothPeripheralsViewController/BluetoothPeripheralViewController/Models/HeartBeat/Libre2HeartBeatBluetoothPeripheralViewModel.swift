@@ -45,7 +45,8 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     func sectionTitle(forSection section: Int) -> String {
         
         // there's no section specific for this type of transmitter, this function will not be called
-        return ""
+        return "Libre View"
+        
     }
     
     func update(cell: UITableViewCell, forRow rawValue: Int, forSection section: Int, for bluetoothPeripheral: BluetoothPeripheral) {
@@ -117,12 +118,7 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     
     func numberOfSettings(inSection section: Int) -> Int {
         
-        // should only be called with section number 1
-        if section == 1 {
-            return 1
-        } else {
-            return 0
-        }
+        return Settings.allCases.count
         
     }
     
