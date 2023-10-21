@@ -108,8 +108,8 @@ public class NightScoutUploadManager: NSObject, ObservableObject {
         trace("    setting nightScoutSyncTreatmentsRequired to true, this will also initiate a treatments sync", log: self.oslog, category: ConstantsLog.categoryNightScoutUploadManager, type: .info)
         UserDefaults.standard.nightScoutSyncTreatmentsRequired = true
         
-        // check that master is enabled
-        guard UserDefaults.standard.isMaster else {return}
+        // check that master is enabled or libreview is used
+        guard (UserDefaults.standard.isMaster || UserDefaults.standard.libreViewEnabled) else {return}
         
         // check that either the API_SECRET or Token exists, if both are nil then return
         if UserDefaults.standard.nightScoutAPIKey == nil && UserDefaults.standard.nightscoutToken == nil {
@@ -384,8 +384,8 @@ public class NightScoutUploadManager: NSObject, ObservableObject {
                     
                     if (keyValueObserverTimeKeeper.verifyKey(forKey: keyPathEnum.rawValue, withMinimumDelayMilliSeconds: 200)) {
                         
-                        // if master is set, siteURL exists and either API_SECRET or a token is entered, then test credentials
-                        if UserDefaults.standard.nightScoutUrl != nil && UserDefaults.standard.isMaster && (UserDefaults.standard.nightScoutAPIKey != nil || UserDefaults.standard.nightscoutToken != nil) {
+                        // if master is set or libreViewEnabled enabled, siteURL exists and either API_SECRET or a token is entered, then test credentials
+                        if UserDefaults.standard.nightScoutUrl != nil && (UserDefaults.standard.isMaster || UserDefaults.standard.libreViewEnabled) && (UserDefaults.standard.nightScoutAPIKey != nil || UserDefaults.standard.nightscoutToken != nil) {
                             
                             testNightScoutCredentials({ (success, error) in
                                 DispatchQueue.main.async {
@@ -408,8 +408,8 @@ public class NightScoutUploadManager: NSObject, ObservableObject {
                     // if changing to enabled, then do a credentials test and if ok start upload, in case of failure don't give warning, that's the only difference with previous cases
                     if (keyValueObserverTimeKeeper.verifyKey(forKey: keyPathEnum.rawValue, withMinimumDelayMilliSeconds: 200)) {
                         
-                        // if master is set, siteURL exists and either API_SECRET or a token is entered, then test credentials
-                        if UserDefaults.standard.nightScoutUrl != nil && UserDefaults.standard.isMaster && (UserDefaults.standard.nightScoutAPIKey != nil || UserDefaults.standard.nightscoutToken != nil) {
+                        // if master is set or libreViewEnabled enabled , siteURL exists and either API_SECRET or a token is entered, then test credentials
+                        if UserDefaults.standard.nightScoutUrl != nil && (UserDefaults.standard.isMaster || UserDefaults.standard.libreViewEnabled) && (UserDefaults.standard.nightScoutAPIKey != nil || UserDefaults.standard.nightscoutToken != nil) {
                             
                             testNightScoutCredentials({ (success, error) in
                                 DispatchQueue.main.async {

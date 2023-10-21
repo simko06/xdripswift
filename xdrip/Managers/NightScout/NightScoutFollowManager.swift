@@ -359,7 +359,7 @@ class NightScoutFollowManager: NSObject {
     
     /// verifies values of applicable UserDefaults and either starts or stops follower mode, inclusive call to enableSuspensionPrevention or disableSuspensionPrevention - also first download is started if applicable
     private func verifyUserDefaultsAndStartOrStopFollowMode() {
-        if !UserDefaults.standard.isMaster && UserDefaults.standard.nightScoutUrl != nil && UserDefaults.standard.nightScoutEnabled {
+        if !UserDefaults.standard.isMaster && !UserDefaults.standard.libreViewEnabled && UserDefaults.standard.nightScoutUrl != nil && UserDefaults.standard.nightScoutEnabled {
             
             // this will enable the suspension prevention sound playing
             enableSuspensionPrevention()
