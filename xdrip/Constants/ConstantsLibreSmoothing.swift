@@ -26,7 +26,10 @@ enum ConstantsLibreSmoothing {
     /// defines period of minutes to delete, ie all readings as of 11 minutes ago till current time will be deleted
     static let readingsToDeleteInMinutes = 21
     
-    /// for Libre 1 and 2 direct reading, how many previous per minute readings to store, only useful for smoothing
+    /// for Libre 1, 2 Direct, how many previous per minute readings to store, only useful for smoothing
     static let amountOfPreviousReadingsToStore = 70
+
+    /// for LibreView reading, how many previous per minute readings to store, only useful for smoothing - taking different value than amountOfPreviousReadingsToStore - because probably 70 is far too much
+    static let amountOfPreviousReadingsToStoreForLibreView = 30
     
 }

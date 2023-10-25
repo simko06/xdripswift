@@ -365,11 +365,14 @@ extension UserDefaults {
         /// used for Libre data parsing - only for Libre 1 or Libre 2 read via transmitter, ie full NFC block
         case previousRawLibreValues = "previousRawLibreValues"
         
-        /// used for storing data read with Libre 2 direct
+        /// used for storing data read with Libre 2 direct, also for data downloaded from LibreView - in that case used in conjunction with previousRawGlucoseValueTimeStamp
         case previousRawGlucoseValues = "previousRawGlucoseValues"
         
         /// used for storing data read with Libre 2 direct
         case previousRawTemperatureValues = "previousRawTemperatureValues"
+        
+        /// used for storing timestamps of last reading downloaded from LibreView, to be used in conjunction with previousRawGlucoseValueTimeStamp
+        case previousRawGlucoseValueTimeStamp = "previousRawGlucoseValueTimeStamp"
         
         /// used for storing data read with Libre 2 direct
         case previousTemperatureAdjustmentValues = "previousTemperatureAdjustmentValues"
@@ -1852,6 +1855,16 @@ extension UserDefaults {
         }
     }
     
+    /// used for storing timestamps of last reading downloaded from LibreView and stored in UserDefaults, to be used in conjunction with previousRawGlucoseValueTimeStamp
+    var previousRawGlucoseValueTimeStamp:Date? {
+        get {
+            return object(forKey: Key.previousRawGlucoseValueTimeStamp.rawValue) as? Date
+        }
+        set {
+            set(newValue, forKey: Key.previousRawGlucoseValueTimeStamp.rawValue)
+        }
+    }
+
     /// used for storing data read with Libre 2 direct
     var previousRawTemperatureValues: [Int]? {
         get {

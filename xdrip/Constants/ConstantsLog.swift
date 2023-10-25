@@ -110,7 +110,7 @@ enum ConstantsLog {
     static let categoryCGMBlueReader =               "CGMBlueReader                 "
     
     /// atom
-    static let categoryCGMAtom =                     "categoryCGMAtom               "
+    static let categoryCGMAtom =                     "CGMAtom               "
     
     /// LibreOOPClient
     static let categoryLibreOOPClient =              "LibreOOPClient                "
@@ -149,10 +149,10 @@ enum ConstantsLog {
     static let categoryApplicationDataSnoozeParameter =      "ApplicationDataSnoozeParameter"
     
     /// libre NFC
-    static let categoryLibreNFC =                    "categoryLibreNFC"
+    static let categoryLibreNFC =                    "LibreNFC"
     
     /// for use in cgm transmitter bubble
-    static let categoryLibreSensorType =             "categoryLibreSensorType       "
+    static let categoryLibreSensorType =             "LibreSensorType       "
 
     /// for use in Libre2BLEUtilities
     static let categoryLibre2BLEUtilities =             "Libre2BLEUtilities       "
@@ -172,7 +172,7 @@ enum ConstantsLog {
     static let categoryHeartBeatLibre2 =                        "HeartBeatLibre2          "
     
     /// for use in LibreViewFollowManager 
-    static let categoryLibreViewFollowManager =     "categoryLibreViewFollowManager      "
+    static let categoryLibreViewFollowManager =     "LibreViewFollowManager      "
     
     /// for use in libre view settingsview model
     static let categorySettingsViewLibreViewSettingsViewModel = "categorySettingsViewLibreViewSettingsViewModel"

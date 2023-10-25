@@ -57,26 +57,38 @@ public class GlucoseData {
     }
     
     /**
-     Inserts this GlucoseData chronologically into the array 'into'. First element in the array "into' is the first
+     Inserts this GlucoseData chronologically into the array 'into'. First element in the array "into' is the first. Assumes that the array into is already in the correct order before inserting
      */
     func insertChronologically(into:inout [GlucoseData]) {
-        
-        // insert entry chronologically sorted, first is the youngest
-        if into.count == 0 {
+
+        // if there's no last element, then the array is empty and we just need to append
+        guard let last = into.last else {
             into.append(self)
-        } else {
-            var elementInserted = false
+            return
+        }
+        
+        var elementInserted = false
+
+        // since into is already chronologically sorted, and the chance is high that the new element needs to be inserted either in the beginning orin the end, let's start by end, in next step will start at the beginning and then continue one by one
+        if self.timeStamp >= last.timeStamp {
+            into.append(self)
+        }
+        
+        if !elementInserted {
             loop : for (index, element) in into.enumerated() {
-                if element.timeStamp < self.timeStamp {
+                if element.timeStamp <= self.timeStamp {
                     into.insert(self, at: index)
                     elementInserted = true
                     break loop
                 }
             }
-            if !elementInserted {
-                into.append(self)
-            }
         }
+        
+        if !elementInserted {
+            // should probably never occur
+            into.append(self)
+        }
+
     }
     
 }

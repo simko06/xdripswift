@@ -19,12 +19,12 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     // MARK: - properties
     
     /// service to be discovered
-    // private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
-    private let CBUUID_Service_Libre2: String = "FDE3"
+    private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
+    // private let CBUUID_Service_Libre2: String = "FDE3" (Libre 2)
 
     /// receive characteristic - this is the characteristic for the one minute reading
-    //private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
-    private let CBUUID_ReceiveCharacteristic_Libre2: String = "F002"
+    private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
+    // private let CBUUID_ReceiveCharacteristic_Libre2: String = "F002" (Libre 2)
     
     /// write characteristic - we will not write, but the parent class needs a write characteristic, use the same as the one used for Libre 2
     private let CBUUID_WriteCharacteristic_Libre2: String = "F001"
@@ -34,6 +34,9 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     
     /// is the transmitter oop web enabled or not, to be able to calibrate values received from Libre View
     private var webOOPEnabled: Bool
+    
+    /// when was the last heartbeat
+    private var lastHeartBeatTimeStamp: Date
 
     // MARK: - Initialization
     /// - parameters:
@@ -55,6 +58,9 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
         // initialize webOOPEnabled
         self.webOOPEnabled = webOOPEnabled ?? false
 
+        // initially last heartbeat was never (ie 1 1 1970)
+        self.lastHeartBeatTimeStamp = Date(timeIntervalSince1970: 0)
+
         super.init(addressAndName: newAddressAndName, CBUUID_Advertisement: nil, servicesCBUUIDs: [CBUUID(string: CBUUID_Service_Libre2)], CBUUID_ReceiveCharacteristic: CBUUID_ReceiveCharacteristic_Libre2, CBUUID_WriteCharacteristic: CBUUID_WriteCharacteristic_Libre2, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate)
         
     }
@@ -63,12 +69,47 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     
     override func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
-        super.peripheral(peripheral, didUpdateValueFor: characteristic, error: error)
+        //super.peripheral(peripheral, didUpdateValueFor: characteristic, error: error)
+
+        // trace the received value and uuid
+        if let value = characteristic.value {
+            trace("in peripheralDidUpdateValueFor, characteristic = %{public}@, data = %{public}@", log: log, category: ConstantsLog.categoryBlueToothTransmitter, type: .info, String(describing: characteristic.uuid), value.hexEncodedString())
+        }
 
         // this is the trigger for calling the heartbeat
-        bluetoothTransmitterDelegate?.heartBeat()
+        if (Date()).timeIntervalSince(lastHeartBeatTimeStamp) > ConstantsHeartBeat.minimumTimeBetweenTwoHeartBeats {
+            
+            bluetoothTransmitterDelegate?.heartBeat()
+            
+            lastHeartBeatTimeStamp = Date()
+            
+        }
+        
 
     }
+    
+    /*override func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        
+        trace("didDiscoverCharacteristicsFor for peripheral with name %{public}@, for service with uuid %{public}@", log: log, category: ConstantsLog.categoryHeartBeatLibre2, type: .info, deviceName ?? "'unknown'", String(describing:service.uuid))
+        
+        if let error = error {
+            trace("    didDiscoverCharacteristicsFor error: %{public}@", log: log, category: ConstantsLog.categoryBlueToothTransmitter, type: .error , error.localizedDescription)
+        }
+        
+        if let characteristics = service.characteristics {
+            for characteristic in characteristics {
+                
+                trace("    calling setnotifyvalue for characteristic: %{public}@", log: log, category: ConstantsLog.categoryBlueToothTransmitter, type: .info, String(describing: characteristic.uuid))
+                
+                peripheral.setNotifyValue(true, for: characteristic)
+                
+            }
+        } else {
+            trace("    Did discover characteristics, but no characteristics listed. There must be some error.", log: log, category: ConstantsLog.categoryBlueToothTransmitter, type: .error)
+        }
+    }*/
+    
+
         
     // MARK: - conform to CGMTransmitter
     

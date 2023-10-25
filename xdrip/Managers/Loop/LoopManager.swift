@@ -81,7 +81,7 @@ public class LoopManager:NSObject {
             // if needed, remove readings less than loopDelay minutes old from glucoseData
             if loopDelay > 0 {
                 
-                trace("    loopDelay = %{public}@. Deleting %{public}@ minutes of readings from glucoseData.",log: log, category: ConstantsLog.categoryLoopManager, type: .info, loopDelay.description)
+                trace("    loopDelay = %{public}@. Deleting readings from glucoseData.",log: log, category: ConstantsLog.categoryLoopManager, type: .info, loopDelay.description)
                 
                 while glucoseData.count > 0 &&  glucoseData[0].timeStamp.addingTimeInterval(loopDelay) > Date() {
                     
