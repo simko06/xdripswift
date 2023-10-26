@@ -562,7 +562,6 @@ class LibreViewFollowManager: NSObject {
                 
                 // create reading and insert in followGlucoseDataArray
                 if let newReading = GlucoseData(timeStamp: factoryTimestamp, sgv: valueInMgPerDl, dateFormatter: libreViewDateFormatter) {
-                    trace("    newreading created with value %{public}@ and timestamp %{public}@", log: log, category: ConstantsLog.categoryLibreViewFollowManager, type: .info, valueInMgPerDl.description, factoryTimestamp)
                 
                     newReading.insertChronologically(into: &writeTo)
                     
