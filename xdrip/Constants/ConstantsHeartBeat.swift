@@ -3,7 +3,7 @@ import Foundation
 enum ConstantsHeartBeat {
     
     /// minimum time between two heartbeats
-    static let minimumTimeBetweenTwoHeartBeats = TimeInterval(30.0)
+    static let minimumTimeBetweenTwoHeartBeats = TimeInterval(30)
     
     
 }

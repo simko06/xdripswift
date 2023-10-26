@@ -19,12 +19,17 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     // MARK: - properties
     
     /// service to be discovered
-    private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
+    //private let CBUUID_Service_Libre2: String = "10CC" //"089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
     // private let CBUUID_Service_Libre2: String = "FDE3" (Libre 2)
+    private let CBUUID_Service_Libre2: String = "1A7E4024-E3ED-4464-8B7E-751E03D0DC5F" // omnipod
+    
+    //private let CBUUID_Advertisement_Libre2: String? = nil
+    private let CBUUID_Advertisement_Libre2: String? = "00004024-0000-1000-8000-00805f9b34fb" // omnipod
 
     /// receive characteristic - this is the characteristic for the one minute reading
-    private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
+    //private let CBUUID_ReceiveCharacteristic_Libre2: String = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"
     // private let CBUUID_ReceiveCharacteristic_Libre2: String = "F002" (Libre 2)
+    private let CBUUID_ReceiveCharacteristic_Libre2: String = "1A7E2442-E3ED-4464-8B7E-751E03D0DC5F" // omnipod
     
     /// write characteristic - we will not write, but the parent class needs a write characteristic, use the same as the one used for Libre 2
     private let CBUUID_WriteCharacteristic_Libre2: String = "F001"
@@ -48,7 +53,7 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
     init(address:String?, name: String?, transmitterID:String, bluetoothTransmitterDelegate: BluetoothTransmitterDelegate, webOOPEnabled: Bool?) {
 
         // if it's a new device being scanned for, then use name ABBOTT. It will connect to anything that starts with name ABBOTT
-        var newAddressAndName:BluetoothTransmitter.DeviceAddressAndName = BluetoothTransmitter.DeviceAddressAndName.notYetConnected(expectedName: transmitterID)
+        var newAddressAndName:BluetoothTransmitter.DeviceAddressAndName = BluetoothTransmitter.DeviceAddressAndName.notYetConnected(expectedName: "BOARD")
         
         // if address not nil, then it's about connecting to a device that was already connected to before. We don't know the exact device name, so better to set it to nil. It will be assigned the real value during connection process
         if let address = address {
@@ -61,11 +66,28 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
         // initially last heartbeat was never (ie 1 1 1970)
         self.lastHeartBeatTimeStamp = Date(timeIntervalSince1970: 0)
 
-        super.init(addressAndName: newAddressAndName, CBUUID_Advertisement: nil, servicesCBUUIDs: [CBUUID(string: CBUUID_Service_Libre2)], CBUUID_ReceiveCharacteristic: CBUUID_ReceiveCharacteristic_Libre2, CBUUID_WriteCharacteristic: CBUUID_WriteCharacteristic_Libre2, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate)
+        super.init(addressAndName: newAddressAndName, CBUUID_Advertisement: CBUUID_Advertisement_Libre2, servicesCBUUIDs: [CBUUID(string: CBUUID_Service_Libre2)], CBUUID_ReceiveCharacteristic: CBUUID_ReceiveCharacteristic_Libre2, CBUUID_WriteCharacteristic: CBUUID_WriteCharacteristic_Libre2, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate)
         
     }
     
     // MARK: CBCentralManager overriden functions
+    
+    override func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+
+        super.centralManager(central, didConnect: peripheral)
+        
+        // this is the trigger for calling the heartbeat
+        if (Date()).timeIntervalSince(lastHeartBeatTimeStamp) > ConstantsHeartBeat.minimumTimeBetweenTwoHeartBeats {
+            
+            bluetoothTransmitterDelegate?.heartBeat()
+            
+            lastHeartBeatTimeStamp = Date()
+            
+        }
+
+    }
+    
+
     
     override func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
@@ -85,7 +107,6 @@ class Libre2HeartBeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitter 
             
         }
         
-
     }
     
     /*override func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
