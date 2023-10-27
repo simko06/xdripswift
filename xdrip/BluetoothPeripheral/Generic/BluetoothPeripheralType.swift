@@ -47,7 +47,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
     case AtomType = "Atom"
     
     /// to use a Libre 2 as heartbeat
-    case Libre3HeartBeatType = "Libre 3 HeartBeat"
+    case OmniPodHeartBeatType = "OmniPod HeartBeat"
 
     /// - returns: the BluetoothPeripheralViewModel. If nil then there's no specific settings for the tpe of bluetoothPeripheral
     func viewModel() -> BluetoothPeripheralViewModel? {
@@ -93,7 +93,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
         case .AtomType:
             return AtomBluetoothPeripheralViewModel()
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             return Libre2HeartBeatBluetoothPeripheralViewModel()
             
         }
@@ -161,7 +161,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
             
             return Atom(address: address, name: name, alias: nil, nsManagedObjectContext: nsManagedObjectContext)
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             
             return Libre2HeartBeat(address: address, name: name, alias: nil, nsManagedObjectContext: nsManagedObjectContext)
             
@@ -180,7 +180,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
         case .DexcomType, .BubbleType, .MiaoMiaoType, .BluconType, .GNSentryType, .BlueReaderType, .DropletType, .DexcomG4Type, .WatlaaType, .Libre2Type, .AtomType:
             return .CGM
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             return .HeartBeat
             
         }
@@ -195,7 +195,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
         case .M5StackType, .M5StickCType, .WatlaaType, .BubbleType, .MiaoMiaoType, .GNSentryType, .BlueReaderType, .DropletType, .Libre2Type, .AtomType:
             return false
             
-        case .DexcomType, .BluconType, .DexcomG4Type, .Libre3HeartBeatType:
+        case .DexcomType, .BluconType, .DexcomG4Type, .OmniPodHeartBeatType:
             return true
 
         }
@@ -239,7 +239,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
             // no transmitter id means no validation to do
             return nil
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             // transmitter id is used to create expected device name, could be anything apparently
             return nil
             
@@ -270,7 +270,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
         case .BubbleType, .MiaoMiaoType, .AtomType, .DexcomType:
             return true
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             // to be able to recalibrate values received from libreview
             return true
             
@@ -287,7 +287,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
        
        switch self {
            
-       case .M5StackType, .M5StickCType, .DexcomG4Type, .DexcomType, .Libre3HeartBeatType:
+       case .M5StackType, .M5StickCType, .DexcomG4Type, .DexcomType, .OmniPodHeartBeatType:
            return false
            
        case .BubbleType, .MiaoMiaoType, .WatlaaType, .BluconType, .BlueReaderType, .DropletType , .GNSentryType, .AtomType:
@@ -305,7 +305,7 @@ enum BluetoothPeripheralType: String, CaseIterable {
        
        switch self {
            
-       case .M5StackType, .M5StickCType, .DexcomG4Type, .DexcomType, .BubbleType, .MiaoMiaoType, .WatlaaType, .BluconType, .BlueReaderType, .DropletType , .GNSentryType, .AtomType, .Libre3HeartBeatType:
+       case .M5StackType, .M5StickCType, .DexcomG4Type, .DexcomType, .BubbleType, .MiaoMiaoType, .WatlaaType, .BluconType, .BlueReaderType, .DropletType , .GNSentryType, .AtomType, .OmniPodHeartBeatType:
            return false
         
        case .Libre2Type:

@@ -39,7 +39,7 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
     }
     
     func screenTitle() -> String {
-        return BluetoothPeripheralType.Libre3HeartBeatType.rawValue
+        return BluetoothPeripheralType.OmniPodHeartBeatType.rawValue
     }
     
     func sectionTitle(forSection section: Int) -> String {

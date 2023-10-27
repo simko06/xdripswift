@@ -591,7 +591,7 @@ class Trace {
                             
                         }
                         
-                    case .Libre3HeartBeatType:
+                    case .OmniPodHeartBeatType:
                         if blePeripheral.libre2heartbeat != nil {
                             
                             traceInfo.appendStringAndNewLine("        Type: " + bluetoothPeripheralType.rawValue)

@@ -171,7 +171,7 @@ class BluetoothPeripheralManager: NSObject {
                     // cgm's don't receive reading, they send it
                     break
                     
-                case .Libre3HeartBeatType:
+                case .OmniPodHeartBeatType:
                     // heartbeat transmitters are just there to wake up the app
                     break
                     
@@ -390,7 +390,7 @@ class BluetoothPeripheralManager: NSObject {
                         
                     }
                     
-                case .Libre3HeartBeatType:
+                case .OmniPodHeartBeatType:
                     
                     if let libre2heartbeat = bluetoothPeripheral as? Libre2HeartBeat {
                         
@@ -491,9 +491,9 @@ class BluetoothPeripheralManager: NSObject {
                     return .Libre2Type
                 }
                 
-            case .Libre3HeartBeatType:
+            case .OmniPodHeartBeatType:
                 if bluetoothTransmitter is Libre2HeartBeatBluetoothTransmitter {
-                    return .Libre3HeartBeatType
+                    return .OmniPodHeartBeatType
                 }
                 
             }
@@ -601,7 +601,7 @@ class BluetoothPeripheralManager: NSObject {
             
             return CGMLibre2Transmitter(address: nil, name: nil, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, cGMLibre2TransmitterDelegate: self, sensorSerialNumber: nil, cGMTransmitterDelegate: cgmTransmitterDelegate, nonFixedSlopeEnabled: nil, webOOPEnabled: nil)
             
-        case .Libre3HeartBeatType:
+        case .OmniPodHeartBeatType:
             
             guard let transmitterId = transmitterId else {
                 fatalError("in createNewTransmitter, type Libre2HeartBeatType, transmitterId is nil")
@@ -1008,7 +1008,7 @@ class BluetoothPeripheralManager: NSObject {
                         
                     }
                     
-                case .Libre3HeartBeatType:
+                case .OmniPodHeartBeatType:
                     if let libre2heartbeat = blePeripheral.libre2heartbeat {
                         
                         blePeripheralFound = true
@@ -1303,7 +1303,7 @@ class BluetoothPeripheralManager: NSObject {
                     bluetoothPeripheral.blePeripheral.parameterUpdateNeededAtNextConnect = true
                 }
              
-            case .WatlaaType, .DexcomType, .BubbleType, .MiaoMiaoType, .BluconType, .GNSentryType, .BlueReaderType, .DropletType, .DexcomG4Type, .Libre2Type, .AtomType, .Libre3HeartBeatType:
+            case .WatlaaType, .DexcomType, .BubbleType, .MiaoMiaoType, .BluconType, .GNSentryType, .BlueReaderType, .DropletType, .DexcomG4Type, .Libre2Type, .AtomType, .OmniPodHeartBeatType:
                 
                 // nothing to check
                 break
