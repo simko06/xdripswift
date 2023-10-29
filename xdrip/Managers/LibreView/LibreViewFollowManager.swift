@@ -205,7 +205,7 @@ class LibreViewFollowManager: NSObject {
                 var copyFollowGlucoseDataArray = Array(followGlucoseDataArray)
                 
                 // fill up gaps either with values stored in UserDefaults or using GlucoseData.fill0Gaps
-                LibreViewFollowManager.completeGlucoseData(arrayToComplete: &copyFollowGlucoseDataArray, log: self.log, logCategory: ConstantsLog.categoryLibreViewFollowManager)
+                LibreViewFollowManager.completeAndSmoothGlucoseData(arrayToComplete: &copyFollowGlucoseDataArray, log: self.log, logCategory: ConstantsLog.categoryLibreViewFollowManager)
                 
                 // call libreLinkFollowerInfoReceived in main thread
                 DispatchQueue.main.sync {
@@ -573,28 +573,25 @@ class LibreViewFollowManager: NSObject {
         
     }
     
-    /// Make sure glucose data array has 70 minutes of readings.
-    /// - Fill up gaps with values retrieved from UserDefaults.standard.previousRawGlucoseValues where possible
-    /// - If there's still 0 gaps, then fill them up with the function GlucoseData.fill0Gaps, with maxwidth of 30 minutes. Normally 15 minutes should be enough because LibreView returns the history per 15 minutes.
-    private static func completeGlucoseData(arrayToComplete: inout [GlucoseData], log: OSLog, logCategory: String) {
+    /// - Make sure glucose data array has at least amountOfPreviousReadingsToStoreForLibreView of per minutes readings, if necessary fill up with values download during previous session, or by using interpolation
+    /// - Also apply smoothing
+    private static func completeAndSmoothGlucoseData(arrayToComplete: inout [GlucoseData], log: OSLog, logCategory: String) {
 
         // if prevoiusRawGlucoseValues is empty, then intialize this first
-        let previousRawGlucoseValueTimeStampAsInt: Int64 = UserDefaults.standard.previousRawGlucoseValueTimeStamp?.toSecondsAsInt64() ?? 0
         var previousRawGlucoseValues: [Int] = UserDefaults.standard.previousRawGlucoseValues ?? [Int]()
+        let previousRawGlucoseValueTimeStampAsInt: Int64 = UserDefaults.standard.previousRawGlucoseValueTimeStamp?.toSecondsAsInt64() ?? 0
 
-        // to iterate through arrayToComplete, just as long as we don't hit the end
+        // variable to iterate through arrayToComplete, just as long as we don't hit the end
         // we will not use the first element in the array (ie with index 0), because we know that's the latest one, so start with index 1
         var arrayToCompleteIndex = 1
         
         // iterate through all elements in arrayToCompleteIndex
-        // as we find 'gaps' (ie minutes for which there's no readings), fill up with 0
+        // as we find 'gaps' (ie minutes for which there's no readings), create a new instance of GlucoseData with glucose value 0
         loop1: while arrayToCompleteIndex <= arrayToComplete.count - 1 {
             
-            //trace("ARRAY TRACE - in loop1, arrayToComplete.count - 1 = %{public}@", log: log, category: logCategory, type: .info, (arrayToComplete.count - 1).description)
-
             // starting from arrayToComplete[arrayToCompleteIndex - 1] (ie the previous element)
-            // take the timestamp of that element and substract 60 seconds
-            // then compare with the timestamp of arrayToComplete[arrayToCompleteIndex], difference should be max 5 seconds (5 seconds because Libre readings tend to come on different seconds, or not?)
+            // take the timestamp of that element and subtract 60 seconds
+            // then compare with the timestamp of arrayToComplete[arrayToCompleteIndex], difference should be max 5 seconds (5 seconds because Libre readings tend to come with a few (normally only 1) seconds difference)
             
             // timestamp of the previous element in arrayToComplete, to which we compare the timestamp
             let timeStampOfElementToWhichComparisonIsDoneAsInt = arrayToComplete[arrayToCompleteIndex - 1].timeStamp.toSecondsAsInt64()
@@ -602,23 +599,9 @@ class LibreViewFollowManager: NSObject {
             if abs(arrayToComplete[arrayToCompleteIndex].timeStamp.toSecondsAsInt64() - (timeStampOfElementToWhichComparisonIsDoneAsInt - 60)) > 30 {
                 
                 // the element at arrayToCompleteIndex is more than 1 minute earlier than the previous one
-                // here we need to insert an element
-                
-                // first try to find an element in previousRawGlucoseValues, that has a timestamp less than 5 seconds differing
-                // if we don't find one, then add an entry with glucosedata value 0
-                
-                //trace("ARRAY TRACE - inserting 0.0 element", log: log, category: logCategory, type: .info)
-                //trace("ARRAY TRACE - timeStampOfElementToWhichComparisonIsDoneAsInt = %{public}@", log: log, category: logCategory, type: .info, arrayToComplete[arrayToCompleteIndex - 1].timeStamp.description(with: .current))
-                //traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arraytocomplete before insert")
+                // here we need to insert an instance of GlucoseData with value 0
                 
                 arrayToComplete.insert(GlucoseData(timeStamp: Date(timeIntervalSince1970: Double(timeStampOfElementToWhichComparisonIsDoneAsInt) - 60.0), glucoseLevelRaw: 0.0), at: arrayToCompleteIndex)
-                //traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arraytocomplete after insert")
-
-                
-                //trace("ARRAY TRACE - inserted element has timestamp                   = %{public}@", log: log, category: logCategory, type: .info, arrayToComplete[arrayToCompleteIndex].timeStamp.description(with: .current))
-
-                // increase arrayToCompleteIndex with 1,
-                //arrayToCompleteIndex += 1
 
                 arrayToCompleteIndex += 1
                 
@@ -639,9 +622,6 @@ class LibreViewFollowManager: NSObject {
          then do the opposite, replace 0 values in arrayToComplete with values found in previousRawGlucoseValues
         */
         
-        traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arrayToComplete          before process start")
-        traceGlucoseArray(totrace: previousRawGlucoseValues                    , log: log, logCategory: logCategory, infoString: "previousRawGlucoseValues before process start")
-
         // start the process
         if let first = arrayToComplete.first {
 
@@ -650,8 +630,6 @@ class LibreViewFollowManager: NSObject {
             let indexDifference = Int(round(Double(timeDifference)/Double(60)))
             var index = 0
 
-            trace("indexDifference = %{public}@", log: log, category: logCategory, type: .info, indexDifference.description)
-            
             // first replace 0 values in previousRawGlucoseValues with values found in arrayToComplete
             
             // the element at index in previousRawGlucoseValues corresponds (in time) to the value at indexDifference in arrayToComplete
@@ -662,8 +640,9 @@ class LibreViewFollowManager: NSObject {
                 index += 1
             }
             
-            // previousRawGlucoseValues may be shorter dan amountOfPreviousReadingsToStoreForLibreView
+            // previousRawGlucoseValues may be shorter than amountOfPreviousReadingsToStoreForLibreView
             // append missing values, to come to an amount amountOfPreviousReadingsToStoreForLibreView - indexDifference, because we'll prepend the first missing values later
+            // (why '- indexDifference' because we'll also prepend values at the beginning, amount indexDifference
             while previousRawGlucoseValues.count < ConstantsLibreSmoothing.amountOfPreviousReadingsToStoreForLibreView - indexDifference && index + indexDifference < arrayToComplete.count {
                 
                 previousRawGlucoseValues.append(Int(arrayToComplete[index + indexDifference].glucoseLevelRaw))
@@ -680,11 +659,11 @@ class LibreViewFollowManager: NSObject {
             UserDefaults.standard.previousRawGlucoseValues = previousRawGlucoseValues
             UserDefaults.standard.previousRawGlucoseValueTimeStamp = arrayToComplete[0].timeStamp
 
-            // now do the opposite, replace 0 value in arrayToComplete with values from previousRawGlucoseValues
+            // now do the opposite, replace 0 values in arrayToComplete with values from previousRawGlucoseValues
             
             index = 0
             
-            // the first element in previousRawGlucoseValues corresponds to the first element in arrayToComplete (qua timing)
+            // now the first element in previousRawGlucoseValues corresponds to the first element in arrayToComplete (qua timing)
             while index < previousRawGlucoseValues.count && index < arrayToComplete.count {
                 
                 if arrayToComplete[index].glucoseLevelRaw == 0.0 {
@@ -699,16 +678,10 @@ class LibreViewFollowManager: NSObject {
 
         }
 
-        traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arrayToComplete          after process start")
-        traceGlucoseArray(totrace: previousRawGlucoseValues                    , log: log, logCategory: logCategory, infoString: "previousRawGlucoseValues after process start")
-
-        traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "before fill0gaps")
-
-        // fill up gaps, ie entries where rawvalue = 0
+        // fill up gaps, ie entries where rawvalue = 0, using interpolation
         arrayToComplete.fill0Gaps(maxGapWidth: 30)
 
-        traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arrayToComplete after fill0gaps")
-        
+        // apply smoothing
         if UserDefaults.standard.smoothLibreValues {
             
             // apply Libre smoothing
@@ -716,8 +689,6 @@ class LibreViewFollowManager: NSObject {
             
         }
         
-        traceGlucoseArray(totrace: arrayToComplete.map{Int($0.glucoseLevelRaw)}, log: log, logCategory: logCategory, infoString: "arrayToComplete after smoothing")
-
     }
     
     private static func traceGlucoseArray(totrace: [Int], log: OSLog, logCategory: String, infoString: String) {
