@@ -143,7 +143,7 @@ class NightScoutFollowManager: NSObject {
 
     
     /// download recent readings from nightScout, send result to delegate, and schedule new download
-    @objc private func download() {
+    @objc public func download(scheduleNewDownloadAfterDownload: Bool = true) {
         
         trace("in download", log: self.log, category: ConstantsLog.categoryNightScoutFollowManager, type: .info)
 
@@ -197,7 +197,7 @@ class NightScoutFollowManager: NSObject {
                     }
 
                     // schedule new download
-                    self.scheduleNewDownload()
+                    self.scheduleNewDownload(scheduleNewDownloadAfterDownload: scheduleNewDownloadAfterDownload)
 
                 }
                 
@@ -211,16 +211,19 @@ class NightScoutFollowManager: NSObject {
     }
     
     /// schedule new download with timer, when timer expires download() will be called
-    private func scheduleNewDownload() {
+    private func scheduleNewDownload(scheduleNewDownloadAfterDownload: Bool = true) {
         
         trace("in scheduleNewDownload", log: self.log, category: ConstantsLog.categoryNightScoutFollowManager, type: .info)
         
-        // schedule a timer for 15 seconds and assign it to a let property
-        let downloadTimer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(self.download), userInfo: nil, repeats: false)
+        // if scheduleNewDownloadAfterDownload = true , then schedule a timer for 15 seconds and assign it to a let property
+        // if scheduleNewDownloadAfterDownload = false, then set downloadTimer to nil
+        let downloadTimer: Timer? = scheduleNewDownloadAfterDownload ? Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(self.download), userInfo: nil, repeats: false): nil
         
-        // assign invalidateDownLoadTimerClosure to a closure that will invalidate the downloadTimer
+        // assign invalidateDownLoadTimerClosure to a closure that will invalidate the downloadTimer, if downloadTimer not nil
         invalidateDownLoadTimerClosure = {
-            downloadTimer.invalidate()
+            if let downloadTimer = downloadTimer {
+                downloadTimer.invalidate()
+            }
         }
     }
     
