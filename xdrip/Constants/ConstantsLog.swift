@@ -174,6 +174,9 @@ enum ConstantsLog {
     /// for use in LibreViewFollowManager 
     static let categoryLibreViewFollowManager =     "LibreViewFollowManager      "
     
+    /// for use in LibreViewFollowManager
+    static let categoryLoopFollowManager =          "LoopFollowManager           "
+    
     /// for use in libre view settingsview model
     static let categorySettingsViewLibreViewSettingsViewModel = "categorySettingsViewLibreViewSettingsViewModel"
     

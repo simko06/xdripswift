@@ -426,6 +426,9 @@ final class RootViewController: UIViewController, ObservableObject {
     /// libreViewFollowManager instance
     private var libreViewFollowManager: LibreViewFollowManager?
     
+    /// libreViewFollowManager instance
+    private var loopFollowManager: LoopFollowManager?
+    
     /// dexcomShareUploadManager instance
     private var dexcomShareUploadManager:DexcomShareUploadManager?
     
@@ -824,12 +827,19 @@ final class RootViewController: UIViewController, ObservableObject {
             
         })
         
-        // add tracing when app goes from foreground to background
+        // add reading when app goes from foreground to background
         ApplicationManager.shared.addClosureToRunWhenAppDidEnterBackground(key: applicationManagerKeyTraceAppGoesToBackGround, closure: {trace("Application did enter background", log: self.log, category: ConstantsLog.categoryRootView, type: .info)})
         
         // add tracing when app comes to foreground
         ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyTraceAppGoesToForeground, closure: {
-            trace("Application will enter foreground", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
+            trace("Application will enter foreground, fetching reading from shared user defaults", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
+            self.loopFollowManager?.getReading()
+
+        })
+        
+        // add reading when app comes to foreground
+        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyTraceAppGoesToForeground, closure: {
+            trace("Application will enter foreground, fetching reading from libreview", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
             self.libreViewFollowManager?.getReading()
 
         })
@@ -956,6 +966,9 @@ final class RootViewController: UIViewController, ObservableObject {
         // setup libreViewFollowManager
         libreViewFollowManager = LibreViewFollowManager(coreDataManager: coreDataManager, libreLinkFollowerDelegate: self)
         
+        // setup loopfollowmanager
+        loopFollowManager = LoopFollowManager(coreDataManager: coreDataManager, loopFollowerDelegate: self)
+        
         // setup healthkitmanager
         healthKitManager = HealthKitManager(coreDataManager: coreDataManager)
         
@@ -1040,7 +1053,7 @@ final class RootViewController: UIViewController, ObservableObject {
         }
         
         // setup bluetoothPeripheralManager
-        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, heartBeatFunction: {self.libreViewFollowManager?.getReading()}, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
+        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, heartBeatFunction: {self.loopFollowManager?.getReading()}, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
         
         // to initialize UserDefaults.standard.transmitterTypeAsString
         cgmTransmitterInfoChanged()
@@ -3437,6 +3450,20 @@ extension RootViewController: LibreLinkFollowerDelegate {
             trace("sensor age = : %{public}@", log: self.log, category: ConstantsLog.categoryRootView, type: .info, Double(sensorAge!).description)
         }
         cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: sensorAge)
+        
+    }
+    
+}
+
+// MARK: - conform to LoopFollowerDelegate protocol
+
+extension RootViewController: LoopFollowerDelegate {
+    
+    func loopFollowerInfoReceived(followGlucoseDataArray:inout [GlucoseData]) {
+
+        // if sensorStart not nil, then calculate sensorAge as TimeInterval
+        
+        cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: nil)
         
     }
     
