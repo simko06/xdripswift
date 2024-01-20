@@ -80,6 +80,8 @@
 		F808D2CC240328FA0084B5DB /* Bubble+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F808D2CB240328FA0084B5DB /* Bubble+CoreDataClass.swift */; };
 		F808D2CE2403292C0084B5DB /* Bubble+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F808D2CD2403292C0084B5DB /* Bubble+CoreDataProperties.swift */; };
 		F808D2D2240329E80084B5DB /* Bubble+BluetoothPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = F808D2D1240329E70084B5DB /* Bubble+BluetoothPeripheral.swift */; };
+		F80CFC8A2B5C72B0006869F1 /* LoopFollowerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80CFC882B5C72B0006869F1 /* LoopFollowerDelegate.swift */; };
+		F80CFC8B2B5C72B0006869F1 /* LoopFollowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80CFC892B5C72B0006869F1 /* LoopFollowManager.swift */; };
 		F80D915C24F06A40006840B5 /* PreLibre2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80D915B24F06A40006840B5 /* PreLibre2.swift */; };
 		F80D916024F45EB3006840B5 /* LibreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80D915F24F45EB2006840B5 /* LibreError.swift */; };
 		F80D916424F5B3DE006840B5 /* Libre2+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80D916224F5B3DE006840B5 /* Libre2+CoreDataProperties.swift */; };
@@ -824,6 +826,8 @@
 		F808D2CB240328FA0084B5DB /* Bubble+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bubble+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F808D2CD2403292C0084B5DB /* Bubble+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bubble+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F808D2D1240329E70084B5DB /* Bubble+BluetoothPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bubble+BluetoothPeripheral.swift"; sourceTree = "<group>"; };
+		F80CFC882B5C72B0006869F1 /* LoopFollowerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoopFollowerDelegate.swift; sourceTree = "<group>"; };
+		F80CFC892B5C72B0006869F1 /* LoopFollowManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoopFollowManager.swift; sourceTree = "<group>"; };
 		F80D915B24F06A40006840B5 /* PreLibre2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreLibre2.swift; sourceTree = "<group>"; };
 		F80D915F24F45EB2006840B5 /* LibreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibreError.swift; sourceTree = "<group>"; };
 		F80D916224F5B3DE006840B5 /* Libre2+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Libre2+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -2766,6 +2770,8 @@
 		F8E51D5B2448D8A3001C9E5A /* Loop */ = {
 			isa = PBXGroup;
 			children = (
+				F80CFC882B5C72B0006869F1 /* LoopFollowerDelegate.swift */,
+				F80CFC892B5C72B0006869F1 /* LoopFollowManager.swift */,
 				F8E0475D28CC8E330049D8C9 /* GlucoseData+LoopShare.swift */,
 				F8E51D5C2448D8B5001C9E5A /* LoopManager.swift */,
 			);
@@ -3654,6 +3660,7 @@
 				F84DDF4B279DF03400F7B5A4 /* TextsNightScout.swift in Sources */,
 				F8B3A853227F2743004BA588 /* AlertsSettingsViewController.swift in Sources */,
 				F8B3A849227F090E004BA588 /* SettingsViewSpeakSettingsViewModel.swift in Sources */,
+				F80CFC8B2B5C72B0006869F1 /* LoopFollowManager.swift in Sources */,
 				F8BDD43F221B5BAF006EAB84 /* TextsErrorMessages.swift in Sources */,
 				F8B3A7FA2278E0E8004BA588 /* SettingsViewModelProtocol.swift in Sources */,
 				F8A2BC3225DB0D6D001D1E78 /* BluetoothPeripheralManaging.swift in Sources */,
@@ -3756,6 +3763,7 @@
 				F8F7B8EB259A7B1C00C47B04 /* SavitzkyGolaySmoothableArray.swift in Sources */,
 				D417E51C282EC8DB008DC467 /* ProgressBarViewController.swift in Sources */,
 				F830991C23C2909E005741DF /* Watlaa+CoreDataClass.swift in Sources */,
+				F80CFC8A2B5C72B0006869F1 /* LoopFollowerDelegate.swift in Sources */,
 				F808D2CC240328FA0084B5DB /* Bubble+CoreDataClass.swift in Sources */,
 				F8A1586122EDB844007F5B5D /* ConstantsNotifications.swift in Sources */,
 				F8DF765523E34FD500063910 /* DexcomG5+CoreDataProperties.swift in Sources */,
