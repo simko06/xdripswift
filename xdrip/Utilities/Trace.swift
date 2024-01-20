@@ -620,6 +620,12 @@ class Trace {
                             
                         }
                         
+                    case .OmniPodHeartBeatType:
+                        if blePeripheral.libre2heartbeat != nil {
+                            
+                            traceInfo.appendStringAndNewLine("        Type: " + bluetoothPeripheralType.rawValue)
+                            
+                        }
                     }
                 }
                 

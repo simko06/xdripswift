@@ -51,9 +51,9 @@ enum ConstantsLog {
     
     /// application data bgreadings
     static let categoryApplicationDataBgReadings =   "ApplicationDataBgReadings     "
-	
-	/// application data Treatments
-	static let categoryApplicationDataTreatments =   "ApplicationDataTreatments     "
+    
+    /// application data Treatments
+    static let categoryApplicationDataTreatments =   "ApplicationDataTreatments     "
     
     /// application data calibrations
     static let categoryApplicationDataCalibrations = "ApplicationDataCalibrations   "
@@ -126,7 +126,7 @@ enum ConstantsLog {
     
     /// BluetoothPeripheralManager logging
     static let categoryBluetoothPeripheralManager =  "BluetoothPeripheralManager    "
-
+    
     /// StatusChartsManager logging
     static let categoryGlucoseChartManager =         "GlucoseChartManager           "
     
@@ -156,16 +156,16 @@ enum ConstantsLog {
     
     /// for use in cgm transmitter bubble
     static let categoryLibreSensorType =             "categoryLibreSensorType       "
-
+    
     /// for use in Libre2BLEUtilities
     static let categoryLibre2BLEUtilities =             "Libre2BLEUtilities       "
-
+    
     /// for use in Libre2BLEUtilities
     static let categoryAppDelegate =                    "AppDelegate              "
-	
-	/// for use in DataExporter
-	static let categoryDataExporter =                           "DataExporter             "
-
+    
+    /// for use in DataExporter
+    static let categoryDataExporter =                           "DataExporter             "
+    
     // for use in LoopManager
     static let categoryLoopManager =                            "LoopManager              "
     
@@ -174,6 +174,11 @@ enum ConstantsLog {
     
     /// SettingsViewCalendarEventsSettingsViewModel logging
     static let categorySettingsViewDataSourceSettingsViewModel =         "SettingsViewDataSourceSettingsViewModel"
+    
+    static let categoryHeartBeatOmnipod =                        "HeartBeatOmnipod        "
+    
+    /// for use in LibreViewFollowManager
+    static let categoryLoopFollowManager =          "LoopFollowManager           "
     
 }
 

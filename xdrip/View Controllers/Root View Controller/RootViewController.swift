@@ -486,7 +486,10 @@ final class RootViewController: UIViewController, ObservableObject {
     /// constant for key in ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground - to do a NightScout Treatment sync
     private let applicationManagerKeyStartNightScoutTreatmentSync = "applicationManagerKeyStartNightScoutTreatmentSync"
 
-    
+    /// constant for key in ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground - to do call LoopFollower
+    private let applicationManagerKeyCallLoopFollowManager = "applicationManagerKeyCallLoopFollowManager"
+
+
     // MARK: - Properties - other private properties
     
     /// for logging
@@ -609,7 +612,9 @@ final class RootViewController: UIViewController, ObservableObject {
     /// uiview to be used for the night-mode overlay to darken the app screen
     private var overlayView: UIView?
 
-    
+    /// libreViewFollowManager instance
+    private var loopFollowManager: LoopFollowManager?
+
     // MARK: - overriden functions
     
     // set the status bar content colour to light to match new darker theme
@@ -944,6 +949,13 @@ final class RootViewController: UIViewController, ObservableObject {
         })
         
         // add tracing when app comes to foreground
+        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyCallLoopFollowManager, closure: {
+            trace("Application will enter foreground, fetching reading from shared user defaults", log: self.log, category: ConstantsLog.categoryRootView, type: .info)
+            self.loopFollowManager?.getReading()
+
+        })
+
+        // add tracing when app comes to foreground
         ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeyTraceAppGoesToForeground, closure: {trace("Application will enter foreground", log: self.log, category: ConstantsLog.categoryRootView, type: .info)})
         
         // add tracing when app will terminaten - this only works for non-suspended apps, probably (not tested) also works for apps that crash in the background
@@ -1070,6 +1082,9 @@ final class RootViewController: UIViewController, ObservableObject {
         // setup nightscoutmanager
         nightScoutFollowManager = NightScoutFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
         
+        // setup loopfollowmanager
+        loopFollowManager = LoopFollowManager(coreDataManager: coreDataManager, loopFollowerDelegate: self)
+
         // setup nightscoutmanager
         libreLinkUpFollowManager = LibreLinkUpFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
         
@@ -1153,7 +1168,7 @@ final class RootViewController: UIViewController, ObservableObject {
         }
         
         // setup bluetoothPeripheralManager
-        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
+        bluetoothPeripheralManager = BluetoothPeripheralManager(coreDataManager: coreDataManager, cgmTransmitterDelegate: self, uIViewController: self, heartBeatFunction: {self.loopFollowManager?.getReading()}, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
         
         // to initialize UserDefaults.standard.transmitterTypeAsString
         cgmTransmitterInfoChanged()
@@ -1987,7 +2002,13 @@ final class RootViewController: UIViewController, ObservableObject {
                 
                 // no oop web, fixed slope
                 
-                calibrator = Libre1Calibrator()
+                // If it's a Libre2HeartBeatBluetoothTransmitter, then use LibreViewCalibrator
+                if cgmTransmitter is Libre2HeartBeatBluetoothTransmitter {
+                    calibrator = FollowCalibrator()
+                } else {
+                    calibrator = Libre1Calibrator()
+
+                }
                 
             }
             
@@ -3784,6 +3805,23 @@ extension RootViewController: FollowerDelegate {
             }
         }
     }
+}
+
+// MARK: - conform to LoopFollowerDelegate protocol
+
+extension RootViewController: LoopFollowerDelegate {
+    
+    func loopFollowerInfoReceived(followGlucoseDataArray:inout [GlucoseData]) {
+
+        // if sensorStart not nil, then calculate sensorAge as TimeInterval
+        if activeSensor == nil, let cgmTransmitter = bluetoothPeripheralManager?.getCGMTransmitter(), let coreDataManager = coreDataManager  {
+            startSensor(cGMTransmitter: cgmTransmitter, sensorStarDate: Date(timeIntervalSinceNow: -604800), sensorCode: nil, coreDataManager: coreDataManager, sendToTransmitter: false)
+        }
+        
+        cgmTransmitterInfoReceived(glucoseData: &followGlucoseDataArray, transmitterBatteryInfo: nil, sensorAge: nil)
+        
+    }
+    
 }
 
 // MARK: - conform to UIGestureRecognizerDelegate protocol
