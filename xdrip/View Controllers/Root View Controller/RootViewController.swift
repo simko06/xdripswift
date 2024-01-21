@@ -2948,8 +2948,8 @@ final class RootViewController: UIViewController, ObservableObject {
             segmentedControlsView.isHidden = false
             miniChartOutlet.isHidden = !UserDefaults.standard.showMiniChart
             statisticsView.isHidden = !UserDefaults.standard.showStatistics
-            sensorProgressViewOutlet.isHidden = false
-            dataSourceViewOutlet.isHidden = false
+            sensorProgressViewOutlet.isHidden = true
+            dataSourceViewOutlet.isHidden = true
             
             // hide
             clockView.isHidden = true
@@ -3046,8 +3046,8 @@ final class RootViewController: UIViewController, ObservableObject {
         
         if (sensorStartDate != nil && sensorMaxAgeInMinutes > 0) {
             
-            sensorProgressViewOutlet.isHidden = false
-            dataSourceViewOutlet.isHidden = false
+            sensorProgressViewOutlet.isHidden = true
+            dataSourceViewOutlet.isHidden = true
             
             let sensorAgeInMinutes: Double = Double(Calendar.current.dateComponents([.minute], from: sensorStartDate!, to: Date()).minute!)
             
