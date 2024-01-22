@@ -325,9 +325,9 @@ extension SettingsViewNightScoutSettingsViewModel: SettingsViewModelProtocol {
         if UserDefaults.standard.nightScoutEnabled {
             
             // in follower mode, only 6 first rows to be shown : nightscout enabled button, url, port number, token, api key, option to test
-            if !UserDefaults.standard.isMaster {
+            /*if !UserDefaults.standard.isMaster {
                 return 6
-            }
+            }*/
             
             // if schedule not enabled then show all rows except the last which is to edit the schedule
             if !UserDefaults.standard.nightScoutUseSchedule {
