@@ -5,7 +5,7 @@ enum ConstantsFollower {
     static let maxiumDaysOfReadingsToDownload = 1
     
     /// maximum age in seconds, of reading in alert flow. If age of latest reading is more than this number, then no alert check will be done
-    static let maximumBgReadingAgeForAlertsInSeconds = 240.0
+    static let maximumBgReadingAgeForAlertsInSeconds = 600.0
     
     /// how often the followerConnectionTimer should run to check for the last connection timestamp and update the UI
     static let secondsUsedByFollowerConnectionTimer: Double = 5
