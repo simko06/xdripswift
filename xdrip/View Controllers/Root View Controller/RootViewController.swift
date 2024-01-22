@@ -1565,13 +1565,6 @@ final class RootViewController: UIViewController, ObservableObject {
                 
             }
             
-            // make sure that any pending (i.e. already scheduled in the future) missed reading notifications are removed
-            if !UserDefaults.standard.isMaster && UserDefaults.standard.followerBackgroundKeepAliveType == .disabled {
-                
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [ConstantsNotifications.NotificationIdentifiersForAlerts.missedReadingAlert])
-                
-            }
-            
             // also update Watch App with the new values. (Only really needed for unit change between mg/dl and mmol/l)
             updateWatchApp()
             
