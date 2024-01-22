@@ -1080,7 +1080,7 @@ final class RootViewController: UIViewController, ObservableObject {
         guard let soundPlayer = soundPlayer else { fatalError("In setupApplicationData, this looks very in appropriate, shame")}
         
         // setup nightscoutmanager
-        nightScoutFollowManager = NightScoutFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
+        //nightScoutFollowManager = NightScoutFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
         
         // setup loopfollowmanager
         loopFollowManager = LoopFollowManager(coreDataManager: coreDataManager, loopFollowerDelegate: self)
