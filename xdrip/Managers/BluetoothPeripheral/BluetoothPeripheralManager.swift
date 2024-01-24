@@ -171,7 +171,7 @@ class BluetoothPeripheralManager: NSObject {
                     // cgm's don't receive reading, they send it
                     break
                     
-                case .OmniPodHeartBeatType:
+                case .OmniPodHeartBeatType, .DexcomG7HeartBeatType:
                     // heartbeat transmitters are just there to wake up the app
                     break
                     
@@ -405,7 +405,22 @@ class BluetoothPeripheralManager: NSObject {
                         }
 
                     }
+                    
+                case .DexcomG7HeartBeatType:
 
+                    if let dexcomG7HeartBeat = bluetoothPeripheral as? DexcomG7HeartBeat {
+                        
+                        if let transmitterId = dexcomG7HeartBeat.blePeripheral.transmitterId {
+                            
+                            newTransmitter = DexcomG7HeartbeatBluetoothTransmitter(address: dexcomG7HeartBeat.blePeripheral.address, name: dexcomG7HeartBeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self, webOOPEnabled: dexcomG7HeartBeat.blePeripheral.webOOPEnabled)
+                            
+                        } else {
+                            
+                            trace("in getBluetoothTransmitter, case DexcomG7HeartbeatBluetoothTransmitter but transmitterId is nil , looks like a coding error ", log: log, category: ConstantsLog.categoryBluetoothPeripheralManager, type: .error)
+                            
+                        }
+
+                    }
                     
                 }
                 
@@ -496,6 +511,10 @@ class BluetoothPeripheralManager: NSObject {
                     return .OmniPodHeartBeatType
                 }
                 
+            case .DexcomG7HeartBeatType:
+                if bluetoothTransmitter is DexcomG7HeartbeatBluetoothTransmitter {
+                    return .DexcomG7HeartBeatType
+                }
             }
             
         }
@@ -609,6 +628,14 @@ class BluetoothPeripheralManager: NSObject {
             
             return Libre2HeartBeatBluetoothTransmitter(address: nil, name: nil, transmitterID: transmitterId, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, webOOPEnabled: nil)
 
+        case .DexcomG7HeartBeatType:
+            
+            guard let transmitterId = transmitterId else {
+                fatalError("in createNewTransmitter, type DexcomG7HeartBeatType, transmitterId is nil")
+            }
+            
+            return DexcomG7HeartbeatBluetoothTransmitter(address: nil, name: nil, transmitterID: transmitterId, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, webOOPEnabled: nil)
+            
         }
         
     }
@@ -1041,6 +1068,39 @@ class BluetoothPeripheralManager: NSObject {
                     }
 
                     
+                case .DexcomG7HeartBeatType:
+                    if let dexcomG7HeartBeat = blePeripheral.dexcomG7HeartBeat {
+                        
+                        blePeripheralFound = true
+                        
+                        // add it to the list of bluetoothPeripherals
+                        let index = insertInBluetoothPeripherals(bluetoothPeripheral: dexcomG7HeartBeat)
+                        
+                        if dexcomG7HeartBeat.blePeripheral.shouldconnect {
+                            
+                            if let transmitterId = dexcomG7HeartBeat.blePeripheral.transmitterId {
+
+                                // create an instance of DexcomG7HeartbeatBluetoothTransmitter, DexcomG7HeartbeatBluetoothTransmitter will automatically try to connect to the transmitter with the address that is stored in dexcomG7HeartBeat
+                                // add it to the array of bluetoothTransmitters
+                                bluetoothTransmitters.insert(DexcomG7HeartbeatBluetoothTransmitter(address: dexcomG7HeartBeat.blePeripheral.address, name: dexcomG7HeartBeat.blePeripheral.name, transmitterID: transmitterId, bluetoothTransmitterDelegate: self, webOOPEnabled: dexcomG7HeartBeat.blePeripheral.webOOPEnabled), at: index)
+
+                            }
+                            
+                            // workaround to allow creation of a cgm, even though we use libreview to download readings, in which case we'll need a libre2heartbeat
+                            if dexcomG7HeartBeat.useDexcomG7HeartBeatAsCGM {
+                                currentCgmTransmitterAddress = blePeripheral.address
+                            }
+                            
+                        } else {
+                            
+                            // bluetoothTransmitters array (which should have the same number of elements as bluetoothPeripherals) needs to have an empty row for the transmitter
+                            bluetoothTransmitters.insert(nil, at: index)
+                            
+                        }
+                        
+                    }
+
+                    
                 case .DropletType:
                     
                     if let droplet = blePeripheral.droplet {
@@ -1160,6 +1220,7 @@ class BluetoothPeripheralManager: NSObject {
                         }
                         
                     }
+                    
                 }
 
             }
@@ -1303,7 +1364,7 @@ class BluetoothPeripheralManager: NSObject {
                     bluetoothPeripheral.blePeripheral.parameterUpdateNeededAtNextConnect = true
                 }
              
-            case .WatlaaType, .DexcomType, .BubbleType, .MiaoMiaoType, .BluconType, .GNSentryType, .BlueReaderType, .DropletType, .DexcomG4Type, .Libre2Type, .AtomType, .OmniPodHeartBeatType:
+            case .WatlaaType, .DexcomType, .BubbleType, .MiaoMiaoType, .BluconType, .GNSentryType, .BlueReaderType, .DropletType, .DexcomG4Type, .Libre2Type, .AtomType, .OmniPodHeartBeatType, .DexcomG7HeartBeatType:
                 
                 // nothing to check
                 break

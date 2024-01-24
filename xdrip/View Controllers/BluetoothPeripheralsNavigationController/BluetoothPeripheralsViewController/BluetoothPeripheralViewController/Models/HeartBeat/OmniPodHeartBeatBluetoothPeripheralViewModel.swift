@@ -8,13 +8,13 @@
 
 import Foundation
 
-class Libre2HeartBeatBluetoothPeripheralViewModel {
+class OmniPodHeartBeatBluetoothPeripheralViewModel {
     
     /// settings specific for Libre heartbeat
     private enum Settings: Int, CaseIterable {
         
-        /// in case LibreView as used to download readings
-        case useLibreViewAsCGM = 0
+        /// in case useOmniPod is used to download readings
+        case useOmniPodAsCGM = 0
         
     }
     
@@ -28,7 +28,7 @@ class Libre2HeartBeatBluetoothPeripheralViewModel {
 
 // MARK: - conform to BluetoothPeripheralViewModel
 
-extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewModel {
+extension OmniPodHeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewModel {
     
     func configure(bluetoothPeripheral: BluetoothPeripheral?, bluetoothPeripheralManager: BluetoothPeripheralManaging, tableView: UITableView, bluetoothPeripheralViewController: BluetoothPeripheralViewController) {
         
@@ -63,9 +63,9 @@ extension Libre2HeartBeatBluetoothPeripheralViewModel: BluetoothPeripheralViewMo
         
         switch setting {
             
-        case .useLibreViewAsCGM:
+        case .useOmniPodAsCGM:
             
-            cell.textLabel?.text = "use Libre View as CGM?"
+            cell.textLabel?.text = "use OmniPod as CGM?"
             
             cell.detailTextLabel?.text = nil // it's a UISwitch,  no detailed text
             

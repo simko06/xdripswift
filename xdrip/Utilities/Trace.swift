@@ -626,6 +626,12 @@ class Trace {
                             traceInfo.appendStringAndNewLine("        Type: " + bluetoothPeripheralType.rawValue)
                             
                         }
+                    case .DexcomG7HeartBeatType:
+                        if blePeripheral.dexcomG7HeartBeat != nil {
+                            
+                            traceInfo.appendStringAndNewLine("        Type: " + bluetoothPeripheralType.rawValue)
+                            
+                        }
                     }
                 }
                 
