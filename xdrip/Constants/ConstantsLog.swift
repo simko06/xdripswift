@@ -177,7 +177,7 @@ enum ConstantsLog {
     
     static let categoryHeartBeatOmnipod =                        "HeartBeatOmnipod        "
     
-    static let categoryHeartBeatG7 =                             "categoryHeartBeatG7     "
+    static let categoryHeartBeatG7BluetoothTransmitter =                 "HeartBeatG7BluetoothTransmitter        "
     
     /// for use in LibreViewFollowManager
     static let categoryLoopFollowManager =          "LoopFollowManager           "

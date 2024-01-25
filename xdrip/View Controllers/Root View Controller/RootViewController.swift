@@ -1996,7 +1996,7 @@ final class RootViewController: UIViewController, ObservableObject {
                 // no oop web, fixed slope
                 
                 // If it's a Libre2HeartBeatBluetoothTransmitter, then use LibreViewCalibrator
-                if cgmTransmitter is Libre2HeartBeatBluetoothTransmitter {
+                if cgmTransmitter is Libre2HeartBeatBluetoothTransmitter || cgmTransmitter is DexcomG7HeartbeatBluetoothTransmitter {
                     calibrator = FollowCalibrator()
                 } else {
                     calibrator = Libre1Calibrator()

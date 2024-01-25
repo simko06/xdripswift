@@ -19,12 +19,12 @@ class DexcomG7HeartbeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitte
     private let CBUUID_Advertisement_G7: String? = "FEBC"
 
     /// receive characteristic - this is the characteristic for the one minute reading
-    private let CBUUID_ReceiveCharacteristic_G7: String = "F8083533-849E-531C-C594-30F1F86A4EA5"
+    private let CBUUID_ReceiveCharacteristic_G7: String = "F8083535-849E-531C-C594-30F1F86A4EA5" // authentication characteristic
     
     private let CBUUID_WriteCharacteristic_G7: String = "F8083535-849E-531C-C594-30F1F86A4EA5"
     
     /// for trace
-    private let log = OSLog(subsystem: ConstantsLog.subSystem, category: ConstantsLog.categoryHeartBeatG7)
+    private let log = OSLog(subsystem: ConstantsLog.subSystem, category: ConstantsLog.categoryHeartBeatG7BluetoothTransmitter)
     
     /// is the transmitter oop web enabled or not, to be able to calibrate values received from Libre View
     private var webOOPEnabled: Bool
@@ -61,39 +61,25 @@ class DexcomG7HeartbeatBluetoothTransmitter: BluetoothTransmitter, CGMTransmitte
     
     // MARK: CBCentralManager overriden functions
     
-    override func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-
-        super.centralManager(central, didConnect: peripheral)
-        
-        // this is the trigger for calling the heartbeat
-        if (Date()).timeIntervalSince(lastHeartBeatTimeStamp) > ConstantsHeartBeat.minimumTimeBetweenTwoHeartBeats {
-            
-            bluetoothTransmitterDelegate?.heartBeat()
-            
-            lastHeartBeatTimeStamp = Date()
-            
-        }
-
-    }
-    
-
-    
     override func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
         //super.peripheral(peripheral, didUpdateValueFor: characteristic, error: error)
 
         // trace the received value and uuid
         if let value = characteristic.value {
-            trace("in peripheralDidUpdateValueFor, characteristic = %{public}@, data = %{public}@", log: log, category: ConstantsLog.categoryHeartBeatG7, type: .info, String(describing: characteristic.uuid), value.hexEncodedString())
+            trace("in peripheralDidUpdateValueFor, characteristic = %{public}@, data = %{public}@", log: log, category: ConstantsLog.categoryHeartBeatG7BluetoothTransmitter, type: .info, String(describing: characteristic.uuid), value.hexEncodedString())
         }
 
         // this is the trigger for calling the heartbeat
         if (Date()).timeIntervalSince(lastHeartBeatTimeStamp) > ConstantsHeartBeat.minimumTimeBetweenTwoHeartBeats {
             
-            bluetoothTransmitterDelegate?.heartBeat()
-            
+            // sleep for a second to allow Loop to read the readings and store them in shared user defaults
+            Thread.sleep(forTimeInterval: 1)
+
+            self.bluetoothTransmitterDelegate?.heartBeat()
+
             lastHeartBeatTimeStamp = Date()
-            
+
         }
         
     }
