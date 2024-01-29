@@ -124,8 +124,6 @@ final class BluetoothPeripheralsViewController: UIViewController {
 
             }
             
-            /*guard let expectedBluetoothPeripheralType = sender as? BluetoothPeripheral else {fatalError("In BluetoothPeripheralsViewController, prepare for segue, sender is not BluetoothPeripheral and not BluetoothPeripheralType" )}*/
-            
             guard let expectedBluetoothPeripheralType = (sender as? BluetoothPeripheral) != nil ? (sender as! BluetoothPeripheral).bluetoothPeripheralType() : (sender as? BluetoothPeripheralType) != nil ? (sender as! BluetoothPeripheralType):nil  else {
 
                 fatalError("In BluetoothPeripheralsViewController, prepare for segue, sender is not BluetoothPeripheral and not BluetoothPeripheralType" )
