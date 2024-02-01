@@ -11,7 +11,7 @@ public class Libre2HeartBeat: NSManagedObject {
         
         super.init(entity: entity, insertInto: nsManagedObjectContext)
         
-        blePeripheral = BLEPeripheral(address: address, name: name, alias: nil, bluetoothPeripheralType: .Libre2Type, nsManagedObjectContext: nsManagedObjectContext)
+        blePeripheral = BLEPeripheral(address: address, name: name, alias: nil, bluetoothPeripheralType: .OmniPodHeartBeatType, nsManagedObjectContext: nsManagedObjectContext)
         
     }
     

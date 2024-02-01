@@ -115,7 +115,7 @@
         <attribute name="voltageB" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="blePeripheral" maxCount="1" deletionRule="Cascade" destinationEntity="BLEPeripheral" inverseName="dexcomG5" inverseEntity="BLEPeripheral"/>
     </entity>
-    <entity name="DexcomG7HeartBeat" representedClassName="DexcomG7HeartBeat" syncable="YES">
+    <entity name="DexcomG7HeartBeat" representedClassName=".DexcomG7HeartBeat" syncable="YES">
         <attribute name="useDexcomG7HeartBeatAsCGM" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="blePeripheral" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BLEPeripheral" inverseName="dexcomG7HeartBeat" inverseEntity="BLEPeripheral"/>
     </entity>
