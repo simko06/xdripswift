@@ -293,7 +293,7 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
         
         DispatchQueue.global(qos: .utility).async {
             
-            Thread.sleep(forTimeInterval: 2)
+            Thread.sleep(forTimeInterval: delayInSeconds)
 
             super.centralManager(central, didDisconnectPeripheral: peripheral, error: error)
             
