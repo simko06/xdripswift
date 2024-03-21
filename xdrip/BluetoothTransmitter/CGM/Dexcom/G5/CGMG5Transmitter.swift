@@ -290,15 +290,11 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
     override func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         
         let delayInSeconds = 2.0
-        
-        DispatchQueue.global(qos: .utility).async {
-            
-            Thread.sleep(forTimeInterval: delayInSeconds)
 
-            super.centralManager(central, didDisconnectPeripheral: peripheral, error: error)
-            
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayInSeconds) {
+                super.centralManager(central, didDisconnectPeripheral: peripheral, error: error)
         }
-
+        
         if waitingPairingConfirmation {
             // device has requested a pairing request and is now in a status of verifying if pairing was successfull or not, this by doing setNotify to writeCharacteristic. If a disconnect occurs now, it means pairing has failed (probably because user didn't approve it
             waitingPairingConfirmation = false
